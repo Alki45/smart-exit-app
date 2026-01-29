@@ -1,0 +1,196 @@
+{
+    "universities": [
+        {
+            "name": "Addis Ababa University",
+            "colleges": [
+                {
+                    "name": "College of Natural and Computational Sciences",
+                    "departments": [
+                        {
+                            "name": "Computer Science",
+                            "streams": [
+                                "Software Engineering",
+                                "Data Science",
+                                "Artificial Intelligence",
+                                "Cybersecurity"
+                            ]
+                        },
+                        {
+                            "name": "Mathematics",
+                            "streams": [
+                                "Pure Mathematics",
+                                "Applied Mathematics",
+                                "Statistics"
+                            ]
+                        },
+                        {
+                            "name": "Physics",
+                            "streams": [
+                                "Theoretical Physics",
+                                "Applied Physics",
+                                "Astrophysics"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "College of Business and Economics",
+                    "departments": [
+                        {
+                            "name": "Accounting and Finance",
+                            "streams": [
+                                "Accounting",
+                                "Finance",
+                                "Banking"
+                            ]
+                        },
+                        {
+                            "name": "Management",
+                            "streams": [
+                                "Business Management",
+                                "Human Resource Management",
+                                "Marketing"
+                            ]
+                        },
+                        {
+                            "name": "Economics",
+                            "streams": [
+                                "Development Economics",
+                                "International Economics"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "College of Engineering",
+                    "departments": [
+                        {
+                            "name": "Electrical and Computer Engineering",
+                            "streams": [
+                                "Electrical Engineering",
+                                "Computer Engineering",
+                                "Electronics"
+                            ]
+                        },
+                        {
+                            "name": "Civil Engineering",
+                            "streams": [
+                                "Structural Engineering",
+                                "Water Resources",
+                                "Transportation"
+                            ]
+                        },
+                        {
+                            "name": "Mechanical Engineering",
+                            "streams": [
+                                "Thermal Engineering",
+                                "Manufacturing",
+                                "Automotive"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Addis Ababa Science and Technology University",
+            "colleges": [
+                {
+                    "name": "College of Electrical and Mechanical Engineering",
+                    "departments": [
+                        {
+                            "name": "Electrical Engineering",
+                            "streams": [
+                                "Power Systems",
+                                "Control Systems",
+                                "Telecommunications"
+                            ]
+                        },
+                        {
+                            "name": "Mechanical Engineering",
+                            "streams": [
+                                "Thermodynamics",
+                                "Fluid Mechanics",
+                                "Machine Design"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "College of Applied Sciences",
+                    "departments": [
+                        {
+                            "name": "Applied Chemistry",
+                            "streams": [
+                                "Industrial Chemistry",
+                                "Analytical Chemistry"
+                            ]
+                        },
+                        {
+                            "name": "Applied Biology",
+                            "streams": [
+                                "Biotechnology",
+                                "Environmental Biology"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "Bahir Dar University",
+            "colleges": [
+                {
+                    "name": "College of Science",
+                    "departments": [
+                        {
+                            "name": "Computer Science",
+                            "streams": [
+                                "Software Engineering",
+                                "Information Systems",
+                                "Network Engineering"
+                            ]
+                        },
+                        {
+                            "name": "Biology",
+                            "streams": [
+                                "Zoology",
+                                "Botany",
+                                "Microbiology"
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "College of Agriculture and Environmental Sciences",
+                    "departments": [
+                        {
+                            "name": "Plant Sciences",
+                            "streams": [
+                                "Agronomy",
+                                "Horticulture",
+                                "Plant Breeding"
+                            ]
+                        },
+                        {
+                            "name": "Animal Sciences",
+                            "streams": [
+                                "Animal Production",
+                                "Animal Health",
+                                "Dairy Science"
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "years": [
+        "1st Year",
+        "2nd Year",
+        "3rd Year",
+        "4th Year",
+        "5th Year",
+        "Graduate"
+    ]
+}

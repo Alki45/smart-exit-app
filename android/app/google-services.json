@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "822183803571",
+    "project_id": "smart-exit-exam",
+    "storage_bucket": "smart-exit-exam.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822183803571:android:d433808e7f3478bd0b4ec6",
+        "android_client_info": {
+          "package_name": "com.example.smart_exit_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYSl_BGe3caG-FnM6jXwJDM0Uh2M8tK4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:822183803571:android:a62324c5f1f1ca740b4ec6",
+        "android_client_info": {
+          "package_name": "com.exitexamapp.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYSl_BGe3caG-FnM6jXwJDM0Uh2M8tK4s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
