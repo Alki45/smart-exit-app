@@ -230,7 +230,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 text: 'Got it',
                 onPressed: () {
                   Navigator.pop(ctx); // Close dialog
-                  Navigator.pushReplacementNamed(context, AppRoutes.login);
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    AppRoutes.login, 
+                    (route) => false,
+                  );
                 },
               ),
             ],

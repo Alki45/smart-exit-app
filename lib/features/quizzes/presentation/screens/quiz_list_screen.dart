@@ -6,6 +6,7 @@ import '../../data/models/quiz_model.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../providers/quiz_provider.dart';
 import '../widgets/quiz_card.dart';
+import '../../../auth/presentation/providers/auth_provider.dart';
 
 class QuizListScreen extends StatefulWidget {
   final String courseId; // Passed via arguments usually
@@ -20,9 +21,13 @@ class _QuizListScreenState extends State<QuizListScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => 
-      Provider.of<QuizProvider>(context, listen: false).loadQuizzesForCourse(widget.courseId)
-    );
+    Future.microtask(() {
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      if (auth.currentUser != null) {
+        Provider.of<QuizProvider>(context, listen: false)
+            .loadQuizzesForCourse(auth.currentUser!.id, widget.courseId);
+      }
+    });
   }
 
   @override

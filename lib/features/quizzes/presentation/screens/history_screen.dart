@@ -68,7 +68,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
               
               return Card(
                 margin: const EdgeInsets.only(bottom: 12),
-                color: AppColors.surface,
+                color: AppColors.cardBackground,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 child: ListTile(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -91,8 +91,50 @@ class _HistoryScreenState extends State<HistoryScreen> {
                     ],
                   ),
                   trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    // TODO: Show attempt details/review
+                  onTap: () async {
+                    final quizProvider = Provider.of<QuizProvider>(context, listen: false);
+                    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                    
+                    if (authProvider.currentUser == null) return;
+
+                    // Show loading
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (ctx) => const Center(child: CircularProgressIndicator()),
+                    );
+
+                    try {
+                      final quiz = await quizProvider.getQuizById(
+                        authProvider.currentUser!.id, 
+                        attempt.quizId
+                      );
+                      
+                      if (mounted) Navigator.pop(context); // Close loading
+
+                      if (quiz != null) {
+                        if (mounted) {
+                          Navigator.pushNamed(
+                            context, 
+                            '/quiz-review', 
+                            arguments: {'attempt': attempt, 'quiz': quiz}
+                          );
+                        }
+                      } else {
+                         if (mounted) {
+                           ScaffoldMessenger.of(context).showSnackBar(
+                             const SnackBar(content: Text('Could not load quiz questions')),
+                           );
+                         }
+                      }
+                    } catch (e) {
+                      if (mounted) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: $e')),
+                        );
+                      }
+                    }
                   },
                 ),
               );

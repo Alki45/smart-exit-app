@@ -20,6 +20,7 @@ class AppRoutes {
   static const String quizList = '/quiz-list';
   static const String takeQuiz = '/take-quiz';
   static const String quizResults = '/quiz-results';
+  static const String quizReview = '/quiz-review';
   
   // Exam Routes
   static const String mockExam = '/mock-exam';

@@ -7,6 +7,7 @@ import '../../../../core/utils/validators.dart';
 import '../../../../shared/widgets/custom_button.dart';
 import '../../../../shared/widgets/custom_text_field.dart';
 import '../providers/course_provider.dart';
+import '../../../../features/auth/presentation/providers/auth_provider.dart';
 
 class AddCourseScreen extends StatefulWidget {
   const AddCourseScreen({Key? key}) : super(key: key);
@@ -32,18 +33,36 @@ class _AddCourseScreenState extends State<AddCourseScreen> {
   void _submit() async {
     if (_formKey.currentState!.validate()) {
       final provider = Provider.of<CourseProvider>(context, listen: false);
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+
+      if (auth.currentUser == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User not authenticated'), backgroundColor: AppColors.error),
+        );
+        return;
+      }
       
-      await provider.addCourse(
+      final success = await provider.addCourse(
+        userId: auth.currentUser!.id,
         code: _codeController.text.trim().toUpperCase(),
         name: _nameController.text.trim(),
         creditHours: int.parse(_creditController.text.trim()),
       );
 
       if (mounted) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-           const SnackBar(content: Text('Course added successfully'), backgroundColor: AppColors.success),
-        );
+        if (success) {
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+             const SnackBar(content: Text('Course added successfully'), backgroundColor: AppColors.success),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(provider.errorMessage ?? 'Failed to add course'), 
+              backgroundColor: AppColors.error
+            ),
+          );
+        }
       }
     }
   }

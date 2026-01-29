@@ -11,6 +11,7 @@ import '../../../../features/quizzes/presentation/providers/quiz_provider.dart';
 import '../../../../features/quizzes/data/models/quiz_model.dart';
 import '../../data/models/blueprint_model.dart';
 import '../providers/course_provider.dart';
+import '../../../../features/auth/presentation/providers/auth_provider.dart';
 import 'package:uuid/uuid.dart';
 
 class UploadBlueprintScreen extends StatefulWidget {
@@ -70,7 +71,48 @@ class _UploadBlueprintScreenState extends State<UploadBlueprintScreen> {
           _isUploading = false;
           _statusMessage = 'Success!';
         });
-        Navigator.pop(context);
+        
+        // Show Success Dialog
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (ctx) => AlertDialog(
+            backgroundColor: AppColors.cardBackground,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: const BoxDecoration(
+                    color: Colors.green,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check, color: Colors.white, size: 48),
+                ),
+                const SizedBox(height: 24),
+                Text('Upload Complete', style: AppTextStyles.h3),
+                const SizedBox(height: 12),
+                Text(
+                  _uploadType == 'material' 
+                    ? 'AI has successfully generated a practice quiz from your material.' 
+                    : 'The Exit Exam Blueprint has been processed and your course list is updated.',
+                  textAlign: TextAlign.center,
+                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.textSecondary),
+                ),
+                const SizedBox(height: 32),
+                CustomButton(
+                  text: 'Great!',
+                  onPressed: () {
+                    Navigator.pop(ctx); // Close dialog
+                    Navigator.pop(context); // Go back to courses/home
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
       }
     } catch (e) {
       if (mounted) {
@@ -270,6 +312,20 @@ class _UploadBlueprintScreenState extends State<UploadBlueprintScreen> {
               style: AppTextStyles.bodyLarge.copyWith(color: AppColors.textSecondary),
               textAlign: TextAlign.center,
             ),
+            if (_isUploading) ...[
+              const SizedBox(height: 16),
+              Column(
+                children: [
+                   const CircularProgressIndicator(color: AppColors.cyan),
+                   const SizedBox(height: 16),
+                   Text(
+                     _statusMessage,
+                     style: AppTextStyles.bodyMedium.copyWith(color: AppColors.cyan),
+                     textAlign: TextAlign.center,
+                   ),
+                ],
+              ),
+            ],
             const SizedBox(height: 32),
 
             // Upload Button Area

@@ -55,6 +55,20 @@ class QuizRepository {
         .toList();
   }
 
+  Future<QuizModel?> getQuizById(String userId, String quizId) async {
+    final doc = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('quizzes')
+        .doc(quizId)
+        .get();
+
+    if (doc.exists) {
+      return QuizModel.fromMap(doc.data() as Map<String, dynamic>);
+    }
+    return null;
+  }
+
   List<QuizModel> getSampleQuizzes() {
     return [
       QuizModel(

@@ -42,12 +42,38 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text(AppStrings.appName),
         automaticallyImplyLeading: false, // Hide back button
         actions: [
-            IconButton(
-                icon: const Icon(Icons.person),
-                onPressed: (){
-                    Navigator.pushNamed(context, AppRoutes.editProfile);
-                },
-            )
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.person),
+            onSelected: (value) {
+              if (value == 'edit') {
+                Navigator.pushNamed(context, AppRoutes.editProfile);
+              } else if (value == 'logout') {
+                Provider.of<AuthProvider>(context, listen: false).logout();
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'edit',
+                child: Row(
+                  children: [
+                    Icon(Icons.edit, size: 20),
+                    SizedBox(width: 8),
+                    Text('Edit Profile'),
+                  ],
+                ),
+              ),
+              const PopupMenuItem(
+                value: 'logout',
+                child: Row(
+                  children: [
+                    Icon(Icons.logout, size: 20, color: AppColors.error),
+                    SizedBox(width: 8),
+                    Text('Logout', style: TextStyle(color: AppColors.error)),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       body: Padding(
@@ -55,7 +81,13 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Welcome back!', style: AppTextStyles.h2),
+            // Welcome Header
+            Consumer<AuthProvider>(
+              builder: (context, auth, _) {
+                final firstName = auth.currentUser?.fullName.split(' ').first ?? 'Student';
+                return Text('Welcome back, $firstName!', style: AppTextStyles.h2);
+              },
+            ),
             const SizedBox(height: 24),
             
             // Stats Grid

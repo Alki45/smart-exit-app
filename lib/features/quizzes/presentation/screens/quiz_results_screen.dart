@@ -6,6 +6,7 @@ import '../../../../shared/widgets/custom_button.dart';
 import '../providers/quiz_provider.dart';
 import '../../../auth/presentation/providers/auth_provider.dart';
 import '../../../progress/presentation/providers/progress_provider.dart';
+import '../../../../core/constants/app_routes.dart';
 
 class QuizResultsScreen extends StatefulWidget {
   const QuizResultsScreen({Key? key}) : super(key: key);
@@ -124,10 +125,91 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
 
                       const SizedBox(height: 32),
                       
+                      // Topic Analysis
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text('Performance by Topic', style: AppTextStyles.h4),
+                      ),
+                      const SizedBox(height: 12),
+                      ...provider.getTopicPerformance().entries.map((entry) {
+                        final topic = entry.key;
+                        final correct = entry.value['correct']!;
+                        final total = entry.value['total']!;
+                        final percent = correct / total;
+                        
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(topic, style: AppTextStyles.bodyMedium),
+                                  Text('$correct/$total', style: AppTextStyles.bodySmall),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              LinearProgressIndicator(
+                                value: percent,
+                                backgroundColor: AppColors.cardBackgroundLight,
+                                color: percent >= 0.8 ? Colors.green : (percent >= 0.5 ? AppColors.cyan : Colors.red),
+                                minHeight: 8,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+
+                      const SizedBox(height: 32),
+                      
+                      // Analysis & Recommendations
+                      if (provider.history.isNotEmpty) ...[
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text('Personalized Recommendations', style: AppTextStyles.h4),
+                        ),
+                        const SizedBox(height: 12),
+                        ...provider.history.first.recommendations.map((rec) => Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColors.cardBackgroundLight,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: AppColors.cyan.withOpacity(0.3)),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.lightbulb_outline, color: AppColors.cyan, size: 24),
+                                const SizedBox(width: 16),
+                                Expanded(child: Text(rec, style: AppTextStyles.bodyMedium)),
+                              ],
+                            ),
+                          ),
+                        )).toList(),
+                      ],
+
+                      const SizedBox(height: 32),
+                      
                       CustomButton(
                          text: 'Review Answers',
                          onPressed: () {
-                             // Navigate to review
+                             if (provider.history.isNotEmpty && provider.activeQuiz != null) {
+                               Navigator.pushNamed(
+                                 context, 
+                                 AppRoutes.quizReview,
+                                 arguments: {
+                                   'attempt': provider.history.first,
+                                   'quiz': provider.activeQuiz,
+                                 },
+                               );
+                             } else {
+                               ScaffoldMessenger.of(context).showSnackBar(
+                                 const SnackBar(content: Text('No results to review')),
+                               );
+                             }
                          },
                          type: ButtonType.outline,
                       ),
@@ -135,7 +217,7 @@ class _QuizResultsScreenState extends State<QuizResultsScreen> {
                       CustomButton(
                          text: 'Back to Home',
                          onPressed: () {
-                             Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                             Navigator.pushNamedAndRemoveUntil(context, AppRoutes.home, (route) => false);
                          },
                       ),
                   ],

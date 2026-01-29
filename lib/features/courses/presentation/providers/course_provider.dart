@@ -22,6 +22,7 @@ class CourseProvider extends ChangeNotifier {
   // Load user data from Firestore
   Future<void> loadUserData(String userId) async {
     _setLoading(true);
+    _clearError();
     try {
       final results = await Future.wait([
         _repository.getCourses(userId),
@@ -32,6 +33,7 @@ class CourseProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       _setError(e.toString());
+      debugPrint('Error loading user data: $e');
     } finally {
       _setLoading(false);
     }
@@ -70,13 +72,14 @@ class CourseProvider extends ChangeNotifier {
      }
   }
 
-  Future<void> addCourse({
+  Future<bool> addCourse({
     required String userId,
     required String code, 
     required String name, 
     required int creditHours
   }) async {
     _setLoading(true);
+    _clearError();
     try {
       final newCourse = CourseModel(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
@@ -85,13 +88,16 @@ class CourseProvider extends ChangeNotifier {
         creditHours: creditHours,
         createdAt: DateTime.now(),
         topics: [],
+        userId: userId,
       );
       
       await _repository.saveCourse(userId, newCourse);
-      _courses.add(newCourse);
+      _courses.insert(0, newCourse); // Insert at top
       notifyListeners();
+      return true;
     } catch (e) {
       _setError(e.toString());
+      return false;
     } finally {
       _setLoading(false);
     }
@@ -109,6 +115,11 @@ class CourseProvider extends ChangeNotifier {
     } finally {
       _setLoading(false);
     }
+  }
+
+  void _clearError() {
+    _errorMessage = null;
+    notifyListeners();
   }
 
   void _setLoading(bool value) {

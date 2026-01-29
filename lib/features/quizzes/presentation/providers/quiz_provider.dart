@@ -147,8 +147,55 @@ class QuizProvider extends ChangeNotifier {
     return correctCount;
   }
 
+  Map<String, Map<String, int>> getTopicPerformance() {
+    if (_activeQuiz == null) return {};
+    
+    final Map<String, Map<String, int>> stats = {}; // Topic -> {correct: X, total: Y}
+    
+    for (var question in _activeQuiz!.questions) {
+      final topic = question.topic ?? 'General';
+      if (!stats.containsKey(topic)) {
+        stats[topic] = {'correct': 0, 'total': 0};
+      }
+      
+      stats[topic]!['total'] = stats[topic]!['total']! + 1;
+      if (_userAnswers[question.id] == question.correctAnswerIndex) {
+        stats[topic]!['correct'] = stats[topic]!['correct']! + 1;
+      }
+    }
+    
+    return stats;
+  }
+
+  List<String> _generateRecommendations() {
+    if (_activeQuiz == null) return [];
+    
+    final Map<String, int> mistakesPerTopic = {};
+    for (var question in _activeQuiz!.questions) {
+      if (_userAnswers[question.id] != question.correctAnswerIndex) {
+        String topic = question.topic ?? 'General';
+        mistakesPerTopic[topic] = (mistakesPerTopic[topic] ?? 0) + 1;
+      }
+    }
+
+    if (mistakesPerTopic.isEmpty) return ['Excellent understanding! Keep up the good work.'];
+
+    return mistakesPerTopic.entries.map((e) {
+      if (e.value > 1) {
+        return 'Review "${e.key}" thoroughly - you missed multiple questions here.';
+      } else {
+        return 'Take another look at "${e.key}" to perfect your knowledge.';
+      }
+    }).toList();
+  }
+
   Future<void> saveQuizAttempt(String userId) async {
     if (_activeQuiz == null) return;
+
+    final incorrectIds = _activeQuiz!.questions
+        .where((q) => _userAnswers[q.id] != q.correctAnswerIndex)
+        .map((q) => q.id)
+        .toList();
 
     final attempt = QuizAttemptModel(
       id: const Uuid().v4(),
@@ -160,6 +207,8 @@ class QuizProvider extends ChangeNotifier {
       totalQuestions: totalQuestions,
       timestamp: DateTime.now(),
       userAnswers: Map<String, int>.from(_userAnswers),
+      incorrectQuestionIds: incorrectIds,
+      recommendations: _generateRecommendations(),
     );
 
     try {
@@ -168,6 +217,17 @@ class QuizProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('Error saving quiz attempt: $e');
+    }
+  }
+
+  Future<QuizModel?> getQuizById(String userId, String quizId) async {
+    // Check local list first
+    try {
+      final localQuiz = _courseQuizzes.firstWhere((q) => q.id == quizId);
+      return localQuiz;
+    } catch (_) {
+      // Fetch from remote
+      return await _repository.getQuizById(userId, quizId);
     }
   }
 

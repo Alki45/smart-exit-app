@@ -28,14 +28,24 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  void _loadUserFromFirebase(User user) {
-    _currentUser = UserModel(
-      id: user.uid,
-      fullName: user.displayName ?? 'User',
-      email: user.email!,
-      createdAt: user.metadata.creationTime ?? DateTime.now(),
-    );
-    notifyListeners();
+  Future<void> _loadUserFromFirebase(User user) async {
+    try {
+      final doc = await _firestore.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        _currentUser = UserModel.fromMap(doc.data()!, doc.id);
+      } else {
+        // Fallback for unexpected cases
+        _currentUser = UserModel(
+          id: user.uid,
+          fullName: user.displayName ?? 'User',
+          email: user.email!,
+          createdAt: user.metadata.creationTime ?? DateTime.now(),
+        );
+      }
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error loading user data: $e');
+    }
   }
 
   // Login with Firebase Auth
@@ -51,31 +61,14 @@ class AuthProvider extends ChangeNotifier {
 
       if (!userCredential.user!.emailVerified) {
         await _auth.signOut();
-        _setError('Please verify your email before logging in. Check your inbox and spam folder.');
+        _setError('Please verify your email before logging in.');
         return false;
       }
 
-      _loadUserFromFirebase(userCredential.user!);
+      await _loadUserFromFirebase(userCredential.user!);
       return true;
     } on FirebaseAuthException catch (e) {
-      String message = 'Login failed';
-      switch (e.code) {
-        case 'user-not-found':
-          message = 'No user found with this email';
-          break;
-        case 'wrong-password':
-          message = 'Incorrect password';
-          break;
-        case 'invalid-email':
-          message = 'Invalid email address';
-          break;
-        case 'user-disabled':
-          message = 'This account has been disabled';
-          break;
-        default:
-          message = e.message ?? 'Login failed';
-      }
-      _setError(message);
+      _setError(e.message ?? 'Login failed');
       return false;
     } catch (e) {
       _setError(e.toString());
@@ -85,7 +78,7 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // Register with Firebase Auth and send verification email
+  // Register with Firebase Auth
   Future<Map<String, dynamic>> register({
     required String fullName,
     required String email,
@@ -105,7 +98,6 @@ class AuthProvider extends ChangeNotifier {
         password: password,
       );
 
-      // Create user model
       final newUser = UserModel(
         id: userCredential.user!.uid,
         fullName: fullName,
@@ -118,75 +110,73 @@ class AuthProvider extends ChangeNotifier {
         createdAt: DateTime.now(),
       );
 
-      // Update profile and save to Firestore in parallel for better speed
-      await Future.wait([
-        userCredential.user!.updateDisplayName(fullName),
-        _firestore
+      // 1. Update Display Name
+      await userCredential.user!.updateDisplayName(fullName);
+
+      // 2. Save to Firestore with Timeout
+      try {
+        await _firestore
             .collection('users')
             .doc(userCredential.user!.uid)
-            .set(newUser.toMap()),
-        userCredential.user!.sendEmailVerification(),
-      ]);
+            .set(newUser.toMap())
+            .timeout(const Duration(seconds: 10)); // Prevent infinite hang
+      } catch (e) {
+        // If Firestore fails, we still want to send email verification but notify the user
+        debugPrint('Firestore registration error: $e');
+        _setError('Database connection error. Your account was created but profile data might be delayed. Please try logging in.');
+        return {'success': false};
+      }
 
-      // Sign out until verified
+      // 3. Send Verification Email
+      await userCredential.user!.sendEmailVerification();
+
       await _auth.signOut();
+      _setLoading(false);
 
       return {
         'success': true,
         'email': email,
       };
     } on FirebaseAuthException catch (e) {
-      String message = 'Registration failed';
-      switch (e.code) {
-        case 'email-already-in-use':
-          message = 'This email is already registered';
-          break;
-        case 'weak-password':
-          message = 'Password is too weak. Use at least 6 characters';
-          break;
-        case 'invalid-email':
-          message = 'Invalid email address';
-          break;
-        default:
-          message = e.message ?? 'Registration failed';
-      }
-      _setError(message);
+      _setError(e.message ?? 'Registration failed');
       return {'success': false};
     } catch (e) {
       _setError(e.toString());
       return {'success': false};
     } finally {
-      _setLoading(false);
+      if (_isLoading) _setLoading(false);
     }
   }
 
   Future<bool> updateProfile({
     required String fullName,
     String? universityName,
+    String? universityCollege,
     String? bio,
     String? department,
     String? stream,
     String? academicYear,
   }) async {
+    if (_currentUser == null) return false;
     _setLoading(true);
     _clearError();
 
     try {
-      await Future.delayed(const Duration(seconds: 1)); // Mock delay
+      final updatedUser = _currentUser!.copyWith(
+        fullName: fullName,
+        universityName: universityName,
+        college: universityCollege,
+        bio: bio,
+        department: department,
+        stream: stream,
+        academicYear: academicYear,
+      );
 
-      if (_currentUser != null) {
-        _currentUser = _currentUser!.copyWith(
-          fullName: fullName,
-          universityName: universityName,
-          bio: bio,
-          department: department,
-          stream: stream,
-          academicYear: academicYear,
-        );
-        notifyListeners();
-        return true;
-      }
-      return false;
+      await _firestore.collection('users').doc(_currentUser!.id).update(updatedUser.toMap());
+      
+      _currentUser = updatedUser;
+      notifyListeners();
+      return true;
     } catch (e) {
       _setError(e.toString());
       return false;

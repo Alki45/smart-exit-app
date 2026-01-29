@@ -27,6 +27,7 @@ import 'features/courses/presentation/screens/upload_blueprint_screen.dart';
 import 'features/quizzes/presentation/screens/quiz_list_screen.dart';
 import 'features/quizzes/presentation/screens/quiz_screen.dart';
 import 'features/quizzes/presentation/screens/quiz_results_screen.dart';
+import 'features/quizzes/presentation/screens/quiz_review_screen.dart';
 import 'features/quizzes/presentation/screens/history_screen.dart';
 
 void main() async {
@@ -97,6 +98,14 @@ class SmartExitApp extends StatelessWidget {
               return MaterialPageRoute(builder: (_) => const QuizScreen());
             case AppRoutes.quizResults:
               return MaterialPageRoute(builder: (_) => const QuizResultsScreen());
+            case AppRoutes.quizReview:
+              final args = settings.arguments as Map<String, dynamic>;
+              return MaterialPageRoute(
+                builder: (_) => QuizReviewScreen(
+                  attempt: args['attempt'],
+                  quiz: args['quiz'],
+                ),
+              );
             case AppRoutes.pastAttempts:
               return MaterialPageRoute(builder: (_) => const HistoryScreen());
             default:

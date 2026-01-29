@@ -32,8 +32,9 @@ class CourseRepository {
         .get();
 
     return snapshot.docs
-        .map((doc) => CourseModel.fromMap(doc.data()))
-        .toList();
+        .map((doc) => CourseModel.fromMap(doc.data(), doc.id))
+        .toList()
+        .cast<CourseModel>();
   }
 
   Future<List<BlueprintModel>> getBlueprints(String userId) async {
@@ -45,7 +46,8 @@ class CourseRepository {
         .get();
 
     return snapshot.docs
-        .map((doc) => BlueprintModel.fromMap(doc.data()))
-        .toList();
+        .map((doc) => BlueprintModel.fromMap(doc.data(), doc.id))
+        .toList()
+        .cast<BlueprintModel>();
   }
 }

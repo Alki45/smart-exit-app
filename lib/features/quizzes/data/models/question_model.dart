@@ -4,6 +4,7 @@ class QuestionModel {
   final List<String> options;
   final int correctAnswerIndex;
   final String? explanation;
+  final String? topic;
 
   QuestionModel({
     required this.id,
@@ -11,6 +12,7 @@ class QuestionModel {
     required this.options,
     required this.correctAnswerIndex,
     this.explanation,
+    this.topic,
   });
 
   Map<String, dynamic> toMap() {
@@ -20,6 +22,7 @@ class QuestionModel {
       'options': options,
       'correctAnswerIndex': correctAnswerIndex,
       'explanation': explanation,
+      'topic': topic,
     };
   }
 
@@ -30,6 +33,7 @@ class QuestionModel {
       options: List<String>.from(map['options'] ?? []),
       correctAnswerIndex: map['correctAnswerIndex'] ?? 0,
       explanation: map['explanation'],
+      topic: map['topic'],
     );
   }
 }
