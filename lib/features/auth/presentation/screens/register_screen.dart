@@ -28,6 +28,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
+  int _currentStep = 0;
+  final int _totalSteps = 3;
+
   // Academic information
   Map<String, dynamic> _universityData = {};
   String? _selectedUniversity;
@@ -62,7 +65,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             .toList();
       });
     } catch (e) {
-      print('Error loading university data: $e');
+      debugPrint('Error loading university data: $e');
     }
   }
 
@@ -120,9 +123,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
             .firstWhere((c) => c['name'] == _selectedCollege);
         final department = (college['departments'] as List)
             .firstWhere((d) => d['name'] == value);
-        _streams = (department['streams'] as List<dynamic>)
+            
+        final rawStreams = (department['streams'] as List<dynamic>)
             .map((s) => s as String)
             .toList();
+            
+        if (rawStreams.isEmpty) {
+          _streams = ['General'];
+          _selectedStream = 'General';
+        } else {
+          _streams = rawStreams;
+        }
       } else {
         _streams = [];
       }
@@ -138,19 +149,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _onRegister() async {
-    if (_formKey.currentState!.validate()) {
-      if (_selectedUniversity == null ||
-          _selectedCollege == null ||
-          _selectedDepartment == null ||
-          _selectedStream == null ||
-          _selectedYear == null) {
+  void _nextStep() {
+    if (_currentStep == 0) {
+      if (_fullNameController.text.isEmpty || Validators.validateEmail(_emailController.text) != null) {
+         // Trigger validation
+         _formKey.currentState!.validate();
+         return;
+      }
+    } else if (_currentStep == 1) {
+      if (_selectedUniversity == null || _selectedCollege == null || _selectedDepartment == null || _selectedStream == null || _selectedYear == null) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please select all academic information')),
         );
         return;
       }
+    }
 
+    if (_currentStep < _totalSteps - 1) {
+      setState(() => _currentStep++);
+    } else {
+      _onRegister();
+    }
+  }
+
+  void _previousStep() {
+    if (_currentStep > 0) {
+      setState(() => _currentStep--);
+    } else {
+      Navigator.pop(context);
+    }
+  }
+
+  void _onRegister() async {
+    if (_formKey.currentState!.validate()) {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final result = await authProvider.register(
         fullName: _fullNameController.text.trim(),
@@ -164,273 +195,341 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (result['success'] == true && mounted) {
-        // Show verification email sent dialog
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (ctx) => AlertDialog(
-            backgroundColor: AppColors.cardBackground,
-            title: Row(
-              children: [
-                Icon(Icons.mark_email_read, color: AppColors.cyan, size: 28),
-                SizedBox(width: 12),
-                Text('Verify Your Email', style: AppTextStyles.h3),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'We\'ve sent a verification email to:',
-                  style: AppTextStyles.bodyMedium,
-                ),
-                SizedBox(height: 8),
-                Text(
-                  result['email'],
-                  style: AppTextStyles.bodyLarge.copyWith(
-                    color: AppColors.cyan,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 16),
-                Container(
-                  padding: EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppColors.purple.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppColors.purple.withOpacity(0.3)),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.info_outline, color: AppColors.purple, size: 20),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          'Please check your spam/junk folder if you don\'t see it in your inbox.',
-                          style: AppTextStyles.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 12),
-                Text(
-                  'Click the verification link to activate your account.',
-                  style: AppTextStyles.bodyMedium.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              CustomButton(
-                text: 'Got it',
-                onPressed: () {
-                  Navigator.pop(ctx); // Close dialog
-                  Navigator.of(context).pushNamedAndRemoveUntil(
-                    AppRoutes.login, 
-                    (route) => false,
-                  );
-                },
-              ),
-            ],
-          ),
-        );
+        _showVerificationDialog(result['email']);
       }
     }
+  }
+
+  void _showVerificationDialog(String email) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Column(
+          children: [
+            const Icon(Icons.mark_email_read, color: AppColors.lPrimary, size: 64),
+            const SizedBox(height: 16),
+            Text('Verify Your Email', style: AppTextStyles.h2, textAlign: TextAlign.center),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('We\'ve sent a verification link to:', style: AppTextStyles.bodyMedium, textAlign: TextAlign.center),
+            const SizedBox(height: 8),
+            Text(email, style: AppTextStyles.bodyLarge.copyWith(color: AppColors.lPrimary, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppColors.lPrimary.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.info_outline, color: AppColors.purple, size: 24),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Check your spam folder if you don\'t see it in your inbox.',
+                      style: AppTextStyles.bodySmall,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          CustomButton(
+            text: 'Return to Login',
+            onPressed: () {
+              Navigator.pop(ctx);
+              Navigator.of(context).pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
       body: Consumer<AuthProvider>(
         builder: (context, auth, _) {
           return LoadingOverlay(
             isLoading: auth.isLoading,
             message: 'Creating account...',
             child: SafeArea(
-              child: Center(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(24),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Text(
-                          'Create Account',
-                          style: AppTextStyles.h1,
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Start your journey to success today',
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 32),
-
-                        CustomTextField(
-                          label: AppStrings.fullName,
-                          hint: 'Enter your full name',
-                          controller: _fullNameController,
-                          prefixIcon: Icons.person_outline,
-                          validator: (v) => Validators.validateRequired(v, 'Full name'),
-                        ),
-                        const SizedBox(height: 16),
-
-                        SearchableDropdown(
-                          label: 'University',
-                          hint: 'Select University',
-                          value: _selectedUniversity,
-                          items: _universities,
-                          prefixIcon: Icons.school_outlined,
-                          onChanged: _onUniversityChanged,
-                          validator: (v) => Validators.validateRequired(v, 'University'),
-                        ),
-                        const SizedBox(height: 16),
-
-                        SearchableDropdown(
-                          label: 'College',
-                          hint: 'Select College',
-                          value: _selectedCollege,
-                          items: _colleges,
-                          prefixIcon: Icons.account_balance_outlined,
-                          onChanged: _onCollegeChanged,
-                          validator: (v) => Validators.validateRequired(v, 'College'),
-                        ),
-                        const SizedBox(height: 16),
-
-                        SearchableDropdown(
-                          label: 'Department',
-                          hint: 'Select Department',
-                          value: _selectedDepartment,
-                          items: _departments,
-                          prefixIcon: Icons.business_outlined,
-                          onChanged: _onDepartmentChanged,
-                          validator: (v) => Validators.validateRequired(v, 'Department'),
-                        ),
-                        const SizedBox(height: 16),
-
-                        SearchableDropdown(
-                          label: 'Stream (Program)',
-                          hint: 'Select Stream',
-                          value: _selectedStream,
-                          items: _streams,
-                          prefixIcon: Icons.library_books_outlined,
-                          onChanged: (v) => setState(() => _selectedStream = v),
-                          validator: (v) => Validators.validateRequired(v, 'Stream'),
-                        ),
-                        const SizedBox(height: 16),
-
-                        CustomDropdown(
-                          label: 'Academic Year',
-                          hint: 'Select Year',
-                          value: _selectedYear,
-                          items: _years,
-                          prefixIcon: Icons.calendar_today_outlined,
-                          onChanged: (v) => setState(() => _selectedYear = v),
-                          validator: (v) => Validators.validateRequired(v, 'Academic Year'),
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        CustomTextField(
-                          label: AppStrings.email,
-                          hint: 'Enter your email',
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          prefixIcon: Icons.email_outlined,
-                          validator: Validators.validateEmail,
-                        ),
-                        const SizedBox(height: 16),
-                        
-                        CustomTextField(
-                          label: AppStrings.password,
-                          hint: 'Create a password',
-                          controller: _passwordController,
-                          isPassword: true,
-                          prefixIcon: Icons.lock_outline,
-                          validator: Validators.validatePassword,
-                        ),
-                        const SizedBox(height: 16),
-
-                        CustomTextField(
-                          label: AppStrings.confirmPassword,
-                          hint: 'Confirm your password',
-                          controller: _confirmPasswordController,
-                          isPassword: true,
-                          prefixIcon: Icons.lock_outline,
-                          validator: (v) => Validators.validateConfirmPassword(
-                            v, 
-                            _passwordController.text,
-                          ),
-                        ),
-                        const SizedBox(height: 32),
-
-                         // Error Message
-                        if (auth.errorMessage != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: Text(
-                              auth.errorMessage!,
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: AppColors.error,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-
-                        CustomButton(
-                          text: AppStrings.register,
-                          onPressed: _onRegister,
-                          isLoading: auth.isLoading,
-                        ),
-                        const SizedBox(height: 24),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+              child: Column(
+                children: [
+                  // Progress Header
+                  _buildHeader(),
+                  
+                  Expanded(
+                    child: SingleChildScrollView(
+                      padding: const EdgeInsets.all(24),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            Text(
-                              AppStrings.alreadyHaveAccount,
-                              style: AppTextStyles.bodyMedium.copyWith(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                AppStrings.login,
-                                style: AppTextStyles.bodyMedium.copyWith(
-                                  color: AppColors.cyan,
-                                  fontWeight: FontWeight.bold,
+                            _buildStepTitle(),
+                            const SizedBox(height: 32),
+                            
+                            if (_currentStep == 0) _buildPersonalInfoStep(),
+                            if (_currentStep == 1) _buildAcademicInfoStep(),
+                            if (_currentStep == 2) _buildSecurityStep(),
+                            
+                            const SizedBox(height: 40),
+                            
+                            if (auth.errorMessage != null)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 16),
+                                child: Text(
+                                  auth.errorMessage!,
+                                  style: AppTextStyles.bodyMedium.copyWith(color: AppColors.error),
+                                  textAlign: TextAlign.center,
                                 ),
                               ),
+                            
+                            Row(
+                              children: [
+                                if (_currentStep > 0)
+                                  Expanded(
+                                    child: CustomButton(
+                                      text: 'Back',
+                                      type: ButtonType.outline,
+                                      onPressed: _previousStep,
+                                    ),
+                                  ),
+                                if (_currentStep > 0) const SizedBox(width: 16),
+                                Expanded(
+                                  child: CustomButton(
+                                    text: _currentStep == _totalSteps - 1 ? 'Register' : 'Continue',
+                                    onPressed: _nextStep,
+                                    isLoading: auth.isLoading,
+                                  ),
+                                ),
+                              ],
                             ),
+                            
+                            const SizedBox(height: 24),
+                            if (_currentStep == 0)
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(AppStrings.alreadyHaveAccount, style: AppTextStyles.bodyMedium),
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: Text(AppStrings.login, style: AppTextStyles.bodyLarge.copyWith(color: AppColors.lPrimary, fontWeight: FontWeight.bold)),
+                                  ),
+                                ],
+                              ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: _previousStep,
+              ),
+              Text('Step ${_currentStep + 1} of $_totalSteps', style: AppTextStyles.bodyLarge.copyWith(fontWeight: FontWeight.bold)),
+              const SizedBox(width: 48), // Spacer
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: List.generate(_totalSteps, (index) => Expanded(
+              child: Container(
+                height: 4,
+                margin: EdgeInsets.only(right: index == _totalSteps - 1 ? 0 : 8),
+                decoration: BoxDecoration(
+                  color: index <= _currentStep ? AppColors.lPrimary : AppColors.lOutline.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            )),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStepTitle() {
+    String title = '';
+    String subtitle = '';
+    
+    switch (_currentStep) {
+      case 0:
+        title = 'Let\'s get started';
+        subtitle = 'First, tell us who you are';
+        break;
+      case 1:
+        title = 'Academic Background';
+        subtitle = 'Tell us about your studies';
+        break;
+      case 2:
+        title = 'Secure Account';
+        subtitle = 'Create a strong password for your journey';
+        break;
+    }
+    
+    return Column(
+      children: [
+        Text(title, style: AppTextStyles.h1.copyWith(color: AppColors.lPrimary), textAlign: TextAlign.center),
+        const SizedBox(height: 8),
+        Text(subtitle, style: AppTextStyles.bodyLarge.copyWith(color: AppColors.lOnSurfaceVariant), textAlign: TextAlign.center),
+      ],
+    );
+  }
+
+  Widget _buildPersonalInfoStep() {
+    return Column(
+      children: [
+        CustomTextField(
+          label: 'Full Name',
+          hint: 'Enter your full name',
+          controller: _fullNameController,
+          prefixIcon: Icons.person_outline,
+          validator: (v) => Validators.validateRequired(v, 'Full name'),
+        ),
+        const SizedBox(height: 20),
+        CustomTextField(
+          label: 'Email Address',
+          hint: 'Enter your email',
+          controller: _emailController,
+          keyboardType: TextInputType.emailAddress,
+          prefixIcon: Icons.email_outlined,
+          validator: Validators.validateEmail,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildAcademicInfoStep() {
+    return Column(
+      children: [
+        SearchableDropdown(
+          label: 'University',
+          hint: 'Select University',
+          value: _selectedUniversity,
+          items: _universities,
+          prefixIcon: Icons.school_outlined,
+          onChanged: _onUniversityChanged,
+        ),
+        const SizedBox(height: 20),
+        SearchableDropdown(
+          label: 'College',
+          hint: 'Select College',
+          value: _selectedCollege,
+          items: _colleges,
+          prefixIcon: Icons.account_balance_outlined,
+          onChanged: _onCollegeChanged,
+        ),
+        const SizedBox(height: 20),
+        SearchableDropdown(
+          label: 'Department',
+          hint: 'Select Department',
+          value: _selectedDepartment,
+          items: _departments,
+          prefixIcon: Icons.business_outlined,
+          onChanged: _onDepartmentChanged,
+        ),
+        const SizedBox(height: 20),
+        SearchableDropdown(
+          label: 'Program Stream',
+          hint: 'Select Stream',
+          value: _selectedStream,
+          items: _streams,
+          prefixIcon: Icons.library_books_outlined,
+          onChanged: (v) => setState(() => _selectedStream = v),
+        ),
+        const SizedBox(height: 20),
+        CustomDropdown(
+          label: 'Academic Year',
+          hint: 'Select Year',
+          value: _selectedYear,
+          items: _years,
+          prefixIcon: Icons.calendar_today_outlined,
+          onChanged: (v) => setState(() => _selectedYear = v),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSecurityStep() {
+    return Column(
+      children: [
+        CustomTextField(
+          label: 'Password',
+          hint: 'Create a password',
+          controller: _passwordController,
+          isPassword: true,
+          prefixIcon: Icons.lock_outline,
+          validator: Validators.validatePassword,
+        ),
+        const SizedBox(height: 20),
+        CustomTextField(
+          label: 'Confirm Password',
+          hint: 'Confirm your password',
+          controller: _confirmPasswordController,
+          isPassword: true,
+          prefixIcon: Icons.lock_outline,
+          validator: (v) => Validators.validateConfirmPassword(v, _passwordController.text),
+        ),
+        const SizedBox(height: 32),
+        // Final Summary Card
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: AppColors.lPrimary.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.lPrimary.withOpacity(0.1)),
+          ),
+          child: Column(
+            children: [
+              _buildSummaryRow(Icons.school, _selectedUniversity ?? ''),
+              const Divider(height: 16),
+              _buildSummaryRow(Icons.domain, _selectedDepartment ?? ''),
+              const Divider(height: 16),
+              _buildSummaryRow(Icons.person, _fullNameController.text),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSummaryRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 20, color: AppColors.lPrimary),
+        const SizedBox(width: 12),
+        Expanded(child: Text(text, style: AppTextStyles.bodyMedium, maxLines: 1, overflow: TextOverflow.ellipsis)),
+      ],
     );
   }
 }

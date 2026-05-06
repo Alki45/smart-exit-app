@@ -1,14 +1,22 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:syncfusion_flutter_pdf/pdf.dart';
 
 class PdfService {
-  /// Extracts all text from a PDF file at the given [path].
-  Future<String> extractText(String path) async {
+  /// Extracts all text from a PDF file.
+  Future<String> extractText({String? path, Uint8List? bytes}) async {
     try {
-      // Load the existing PDF document.
-      final File file = File(path);
-      final List<int> bytes = await file.readAsBytes();
-      final PdfDocument document = PdfDocument(inputBytes: bytes);
+      List<int> inputBytes;
+      if (bytes != null) {
+        inputBytes = bytes;
+      } else if (path != null) {
+        final File file = File(path);
+        inputBytes = await file.readAsBytes();
+      } else {
+        throw Exception("No file data provided");
+      }
+
+      final PdfDocument document = PdfDocument(inputBytes: inputBytes);
 
       // Create a new instance of the PdfTextExtractor.
       PdfTextExtractor extractor = PdfTextExtractor(document);

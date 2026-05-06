@@ -2,9 +2,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/quiz_model.dart';
 import '../models/quiz_attempt_model.dart';
 import '../models/question_model.dart';
+import '../models/performance_summary_model.dart';
 
 class QuizRepository {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // ─────────────────────────────────────────────────────────
+  // Quiz Attempts — users/{userId}/quiz_attempts/{attemptId}
+  // ─────────────────────────────────────────────────────────
 
   Future<void> saveQuizAttempt(QuizAttemptModel attempt) async {
     await _firestore
@@ -15,6 +20,23 @@ class QuizRepository {
         .set(attempt.toMap());
   }
 
+  Future<List<QuizAttemptModel>> getQuizHistory(String userId) async {
+    final snap = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('quiz_attempts')
+        .orderBy('timestamp', descending: true)
+        .get();
+
+    return snap.docs
+        .map((doc) => QuizAttemptModel.fromMap(doc.data()))
+        .toList();
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // Quizzes — users/{userId}/quizzes/{quizId}
+  // ─────────────────────────────────────────────────────────
+
   Future<void> saveQuiz(String userId, QuizModel quiz) async {
     await _firestore
         .collection('users')
@@ -24,34 +46,20 @@ class QuizRepository {
         .set(quiz.toMap());
   }
 
-  Future<List<QuizAttemptModel>> getQuizHistory(String userId) async {
-    final querySnapshot = await _firestore
-        .collection('users')
-        .doc(userId)
-        .collection('quiz_attempts')
-        .orderBy('timestamp', descending: true)
-        .get();
-
-    return querySnapshot.docs
-        .map((doc) => QuizAttemptModel.fromMap(doc.data()))
-        .toList();
-  }
-
-  Future<List<QuizModel>> getQuizzes(String userId, {String? courseId}) async {
-    var query = _firestore
+  Future<List<QuizModel>> getQuizzes(String userId,
+      {String? courseId}) async {
+    final col = _firestore
         .collection('users')
         .doc(userId)
         .collection('quizzes');
-    
-    QuerySnapshot snapshot;
-    if (courseId != null) {
-      snapshot = await query.where('courseId', isEqualTo: courseId).get();
-    } else {
-      snapshot = await query.get();
-    }
 
-    return snapshot.docs
-        .map((doc) => QuizModel.fromMap(doc.data() as Map<String, dynamic>))
+    final snap = courseId != null
+        ? await col.where('courseId', isEqualTo: courseId).get()
+        : await col.get();
+
+    return snap.docs
+        .map((doc) =>
+            QuizModel.fromMap(doc.data() as Map<String, dynamic>))
         .toList();
   }
 
@@ -63,11 +71,40 @@ class QuizRepository {
         .doc(quizId)
         .get();
 
-    if (doc.exists) {
-      return QuizModel.fromMap(doc.data() as Map<String, dynamic>);
-    }
-    return null;
+    return doc.exists
+        ? QuizModel.fromMap(doc.data() as Map<String, dynamic>)
+        : null;
   }
+
+  // ─────────────────────────────────────────────────────────
+  // Performance Summaries — performance_summaries/{id}
+  // Top-level collection for fast cross-user dashboard queries.
+  // ─────────────────────────────────────────────────────────
+
+  Future<void> savePerformanceSummary(
+      PerformanceSummaryModel summary) async {
+    await _firestore
+        .collection('performance_summaries')
+        .doc(summary.id)
+        .set(summary.toMap());
+  }
+
+  Future<List<PerformanceSummaryModel>> getPerformanceSummaries(
+      String userId) async {
+    final snap = await _firestore
+        .collection('performance_summaries')
+        .where('user_id', isEqualTo: userId)
+        .get();
+
+    return snap.docs
+        .map((doc) =>
+            PerformanceSummaryModel.fromMap(doc.data(), doc.id))
+        .toList();
+  }
+
+  // ─────────────────────────────────────────────────────────
+  // Sample / Demo Data
+  // ─────────────────────────────────────────────────────────
 
   List<QuizModel> getSampleQuizzes() {
     return [
@@ -81,23 +118,40 @@ class QuizRepository {
           QuestionModel(
             id: 'q1',
             questionText: 'What does CPU stand for?',
-            options: ['Central Processing Unit', 'Computer Personal Unit', 'Central Process Utility', 'Common Parent Unit'],
+            options: [
+              'Central Processing Unit',
+              'Computer Personal Unit',
+              'Central Process Utility',
+              'Common Parent Unit',
+            ],
             correctAnswerIndex: 0,
-            explanation: 'CPU stands for Central Processing Unit, the main brain of the computer.',
+            explanation:
+                'CPU stands for Central Processing Unit, the main brain of the computer.',
+            courseCode: 'cs_basics',
           ),
           QuestionModel(
             id: 'q2',
             questionText: 'Which data structure follows LIFO?',
             options: ['Queue', 'Stack', 'Linked List', 'Array'],
             correctAnswerIndex: 1,
-            explanation: 'Stack follows Last-In-First-Out (LIFO) principle.',
+            explanation:
+                'Stack follows Last-In-First-Out (LIFO) principle.',
+            courseCode: 'cs_basics',
           ),
           QuestionModel(
             id: 'q3',
-            questionText: 'What is the primary purpose of an Operating System?',
-            options: ['Word processing', 'Managing hardware and software resources', 'Browsing the internet', 'Creating graphics'],
+            questionText:
+                'What is the primary purpose of an Operating System?',
+            options: [
+              'Word processing',
+              'Managing hardware and software resources',
+              'Browsing the internet',
+              'Creating graphics',
+            ],
             correctAnswerIndex: 1,
-            explanation: 'An Operating System manages computer hardware and software resources and provides common services for computer programs.',
+            explanation:
+                'An OS manages hardware and software resources for programs.',
+            courseCode: 'cs_basics',
           ),
         ],
       ),
@@ -110,17 +164,27 @@ class QuizRepository {
         questions: [
           QuestionModel(
             id: 's1',
-            questionText: 'Which model is a sequential software development process?',
+            questionText:
+                'Which model is a sequential software development process?',
             options: ['Agile', 'Scrum', 'Waterfall', 'Spiral'],
             correctAnswerIndex: 2,
-            explanation: 'The Waterfall model is a linear sequential flow.',
+            explanation:
+                'The Waterfall model is a linear sequential flow.',
+            courseCode: 'se_basics',
           ),
           QuestionModel(
             id: 's2',
             questionText: 'What does OOP stand for?',
-            options: ['Object Oriented Programming', 'Oracle Output Process', 'Over One Process', 'Object Oriented Protocol'],
+            options: [
+              'Object Oriented Programming',
+              'Oracle Output Process',
+              'Over One Process',
+              'Object Oriented Protocol',
+            ],
             correctAnswerIndex: 0,
-            explanation: 'OOP stands for Object-Oriented Programming.',
+            explanation:
+                'OOP stands for Object-Oriented Programming.',
+            courseCode: 'se_basics',
           ),
         ],
       ),

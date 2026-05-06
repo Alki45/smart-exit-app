@@ -83,14 +83,8 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
                       color: Colors.white.withOpacity(0.05),
                     ),
                     child: ClipOval(
-                      child: Image.network(
-                        'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExM3YyaGwybHh6bHZxdG93eWUzYmN6bmN6bmN6bmN6bmN6bmN6bmN6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7TKDkDbID6S0lV7O/giphy.gif',
-                        fit: BoxFit.cover,
-                        loadingBuilder: (context, child, loadingProgress) {
-                          if (loadingProgress == null) return child;
-                          return const Center(child: CircularProgressIndicator(color: AppColors.cyan));
-                        },
-                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.school_rounded, size: 80, color: AppColors.cyan),
+                      child: const Center(
+                        child: Icon(Icons.school_rounded, size: 80, color: AppColors.cyan),
                       ),
                     ),
                   ),

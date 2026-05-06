@@ -41,7 +41,14 @@ class CoursesScreen extends StatelessWidget {
                              // Reuse Upload Screen but pass courseId to link it
                              // For now, simpler to just navigate and let user know
                              // Ideally we pass arguments to UploadScreen
-                             Navigator.pushNamed(context, AppRoutes.uploadBlueprint); 
+                             Navigator.pushNamed(
+                                 context, 
+                                 AppRoutes.uploadBlueprint,
+                                 arguments: {
+                                   'courseId': course.id,
+                                   'courseName': course.courseName,
+                                 }
+                             ); 
                              ScaffoldMessenger.of(context).showSnackBar(
                                  const SnackBar(content: Text('Select "Course Material" to generate quiz for this course.')),
                              );

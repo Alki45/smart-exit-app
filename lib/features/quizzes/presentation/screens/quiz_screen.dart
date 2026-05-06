@@ -1,23 +1,22 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../../core/theme/text_styles.dart';
-import '../../../../shared/widgets/custom_button.dart';
-import '../../../../shared/widgets/custom_button.dart';
+import '../../../../shared/widgets/app_top_bar.dart';
 import '../providers/quiz_provider.dart';
 import '../../../progress/presentation/providers/progress_provider.dart';
-
+import '../sections/quiz_progress_section.dart';
+import '../sections/question_card_section.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({Key? key}) : super(key: key);
-
   @override
   State<QuizScreen> createState() => _QuizScreenState();
 }
 
 class _QuizScreenState extends State<QuizScreen> {
   late QuizProvider _quizProvider;
+  bool _submitted = false;
 
   @override
   void initState() {
@@ -28,7 +27,7 @@ class _QuizScreenState extends State<QuizScreen> {
 
   void _onProviderUpdate() {
     if (!_quizProvider.isQuizActive && mounted) {
-      _submitQuiz();
+      Navigator.pushReplacementNamed(context, '/quiz-results');
     }
   }
 
@@ -38,171 +37,96 @@ class _QuizScreenState extends State<QuizScreen> {
     super.dispose();
   }
 
-  void _submitQuiz() {
-    Navigator.pushReplacementNamed(context, '/quiz-results');
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Consumer<QuizProvider>(
-        builder: (context, provider, _) {
-          final quiz = provider.activeQuiz;
-          if (quiz == null) {
-            return const Center(child: Text('Error loading quiz'));
-          }
-          
-          final question = quiz.questions[provider.currentQuestionIndex];
-          final total = quiz.questions.length;
-          final current = provider.currentQuestionIndex + 1;
-          
-          return SafeArea(
+    return Consumer<QuizProvider>(
+      builder: (context, provider, _) {
+        final quiz = provider.activeQuiz;
+        if (quiz == null) return const Scaffold(body: Center(child: Text('Error loading quiz')));
+        final question = quiz.questions[provider.currentQuestionIndex];
+        final current = provider.currentQuestionIndex + 1;
+        final total = quiz.questions.length;
+
+        return Scaffold(
+          backgroundColor: AppColors.lBackground,
+          appBar: AppTopBar(rightSlot: _TimerChip(timerString: provider.timerString)),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 24),
             child: Column(
               children: [
-                // Header: Progress & Timer
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Question $current/$total',
-                        style: AppTextStyles.bodyLarge.copyWith(color: AppColors.cyan),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: AppColors.cardBackgroundLight,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Row(
-                          children: [
-                             const Icon(Icons.timer, size: 16, color: AppColors.textSecondary),
-                             const SizedBox(width: 4),
-                             Text(provider.timerString, style: AppTextStyles.bodyMedium),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                QuizProgressSection(current: current, total: total),
+                const SizedBox(height: 20),
+                QuestionCardSection(
+                  question: question,
+                  provider: provider,
+                  submitted: _submitted,
+                  onSubmit: () => setState(() => _submitted = true),
                 ),
-                
-                // Progress Bar
-                LinearProgressIndicator(
-                   value: current / total,
-                   backgroundColor: AppColors.cardBackground,
-                   valueColor: const AlwaysStoppedAnimation<Color>(AppColors.cyan),
-                   minHeight: 4,
-                ),
-                
-                Expanded(
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(24),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                         Text(
-                           question.questionText,
-                           style: AppTextStyles.h4,
-                         ),
-                         const SizedBox(height: 32),
-                         
-                         ...List.generate(question.options.length, (index) {
-                            final choice = question.options[index];
-                            final isSelected = provider.userAnswers[question.id] == index;
-                            
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 16),
-                              child: InkWell(
-                                onTap: () => provider.selectAnswer(question.id, index),
-                                borderRadius: BorderRadius.circular(12),
-                                child: Container(
-                                  padding: const EdgeInsets.all(16),
-                                  decoration: BoxDecoration(
-                                    color: isSelected ? AppColors.purple.withOpacity(0.2) : AppColors.cardBackground,
-                                    borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(
-                                      color: isSelected ? AppColors.purple : AppColors.borderColor,
-                                      width: isSelected ? 2 : 1,
-                                    ),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                       Container(
-                                         width: 24,
-                                         height: 24,
-                                         decoration: BoxDecoration(
-                                           color: isSelected ? AppColors.purple : Colors.transparent,
-                                           shape: BoxShape.circle,
-                                           border: Border.all(
-                                             color: isSelected ? AppColors.purple : AppColors.textTertiary,
-                                           ),
-                                         ),
-                                         child: isSelected 
-                                            ? const Icon(Icons.check, size: 16, color: Colors.white)
-                                            : null,
-                                       ),
-                                       const SizedBox(width: 16),
-                                       Expanded(
-                                         child: Text(
-                                           choice,
-                                           style: AppTextStyles.bodyLarge.copyWith(
-                                             color: isSelected ? Colors.white : AppColors.textSecondary,
-                                           ),
-                                         ),
-                                       ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            );
-                         }),
-                      ],
-                    ),
-                  ),
-                ),
-                
-                // Footer Navigation
-                Padding(
-                   padding: const EdgeInsets.all(16),
-                   child: Row(
-                      children: [
-                         if (current > 1)
-                           Expanded(
-                             child: CustomButton(
-                               text: 'Previous',
-                               onPressed: provider.previousQuestion,
-                               type: ButtonType.outline,
-                             ),
-                           ),
-                         if (current > 1) const SizedBox(width: 16),
-                         Expanded(
-                           child: CustomButton(
-                             text: current == total ? 'Submit' : 'Next',
-                             onPressed: () {
-                                if (current == total) {
-                                   // Calculate Score
-                                   final score = provider.calculateScore();
-                                   
-                                   // Record Progress
-                                   Provider.of<ProgressProvider>(context, listen: false).recordQuizCompletion(score);
-
-                                   provider.endQuiz();
-                                   Navigator.pushReplacementNamed(context, '/quiz-results');
-                                } else {
-                                   provider.nextQuestion();
-                                }
-                             },
-                           ),
-                         ),
-                      ],
-                   ),
+                const SizedBox(height: 20),
+                _FooterNav(
+                  current: current,
+                  total: total,
+                  submitted: _submitted,
+                  onPrev: provider.previousQuestion,
+                  onNext: () {
+                    setState(() => _submitted = false);
+                    if (current == total) {
+                      final score = provider.calculateScore();
+                      Provider.of<ProgressProvider>(context, listen: false).recordQuizCompletion(score);
+                      provider.endQuiz();
+                      Navigator.pushReplacementNamed(context, '/quiz-results');
+                    } else {
+                      provider.nextQuestion();
+                    }
+                  },
                 ),
               ],
             ),
-          );
-        },
-      ),
+          ),
+        );
+      },
     );
+  }
+}
+
+class _TimerChip extends StatelessWidget {
+  final String timerString;
+  const _TimerChip({required this.timerString});
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    decoration: BoxDecoration(color: AppColors.lSurfaceContainerLow, borderRadius: BorderRadius.circular(10), border: Border.all(color: AppColors.lOutlineVariant)),
+    child: Row(children: [
+      const Icon(Icons.timer_outlined, size: 16, color: AppColors.lPrimary),
+      const SizedBox(width: 6),
+      Text(timerString, style: GoogleFonts.inter(fontSize: 13, fontWeight: FontWeight.w700, color: AppColors.lPrimary)),
+    ]),
+  );
+}
+
+class _FooterNav extends StatelessWidget {
+  final int current;
+  final int total;
+  final bool submitted;
+  final VoidCallback onPrev;
+  final VoidCallback onNext;
+  const _FooterNav({required this.current, required this.total, required this.submitted, required this.onPrev, required this.onNext});
+  @override
+  Widget build(BuildContext context) {
+    if (!submitted) return const SizedBox.shrink();
+    return Row(children: [
+      if (current > 1) ...[
+        Expanded(child: OutlinedButton(onPressed: onPrev,
+          style: OutlinedButton.styleFrom(side: const BorderSide(color: AppColors.lPrimary), padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+          child: Text('Previous', style: GoogleFonts.inter(fontWeight: FontWeight.w700, color: AppColors.lPrimary)))),
+        const SizedBox(width: 12),
+      ],
+      Expanded(child: ElevatedButton.icon(
+        onPressed: onNext,
+        icon: const Icon(Icons.arrow_forward, size: 16),
+        label: Text(current == total ? 'Submit Quiz' : 'Next Question', style: GoogleFonts.inter(fontWeight: FontWeight.w700)),
+        style: ElevatedButton.styleFrom(backgroundColor: AppColors.lPrimary, foregroundColor: Colors.white, padding: const EdgeInsets.symmetric(vertical: 14), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+      )),
+    ]);
   }
 }

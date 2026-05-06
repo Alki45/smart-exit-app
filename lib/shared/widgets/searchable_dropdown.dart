@@ -67,17 +67,17 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
               return Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 decoration: BoxDecoration(
-                  color: AppColors.cardBackground,
+                  color: Colors.transparent,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: state.hasError ? AppColors.error : AppColors.borderColor,
+                    color: state.hasError ? AppColors.lError : AppColors.lOutline,
                     width: state.hasError ? 2 : 1,
                   ),
                 ),
                 child: Row(
                   children: [
                     if (widget.prefixIcon != null) ...[
-                      Icon(widget.prefixIcon, color: AppColors.cyan),
+                      Icon(widget.prefixIcon, color: AppColors.lPrimary),
                       const SizedBox(width: 12),
                     ],
                     Expanded(
@@ -85,12 +85,12 @@ class _SearchableDropdownState extends State<SearchableDropdown> {
                         widget.value ?? widget.hint,
                         style: AppTextStyles.bodyMedium.copyWith(
                           color: widget.value == null 
-                              ? AppColors.textSecondary.withOpacity(0.5)
-                              : AppColors.textPrimary,
+                              ? AppColors.lOnSurfaceVariant.withOpacity(0.7)
+                              : AppColors.lOnSurface,
                         ),
                       ),
                     ),
-                    Icon(Icons.search, color: AppColors.cyan, size: 20),
+                    const Icon(Icons.arrow_drop_down, color: AppColors.lPrimary, size: 24),
                   ],
                 ),
               );
@@ -147,7 +147,8 @@ class _SearchDialogState extends State<_SearchDialog> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: AppColors.cardBackground,
+      backgroundColor: AppColors.lSurface,
+      surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -160,9 +161,10 @@ class _SearchDialogState extends State<_SearchDialog> {
               controller: _searchController,
               decoration: InputDecoration(
                 hintText: 'Search...',
-                prefixIcon: const Icon(Icons.search, color: AppColors.cyan),
+                hintStyle: AppTextStyles.bodyMedium.copyWith(color: AppColors.lOutline),
+                prefixIcon: const Icon(Icons.search, color: AppColors.lPrimary),
                 filled: true,
-                fillColor: AppColors.cardBackgroundLight,
+                fillColor: AppColors.lSurfaceContainerHigh,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
@@ -175,13 +177,13 @@ class _SearchDialogState extends State<_SearchDialog> {
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: _filteredItems.length,
-                separatorBuilder: (_, __) => const Divider(color: AppColors.borderColor),
+                separatorBuilder: (_, __) => const Divider(color: AppColors.lOutlineVariant, height: 1),
                 itemBuilder: (context, index) {
                   final item = _filteredItems[index];
                   return ListTile(
                     title: Text(item, style: AppTextStyles.bodyMedium),
                     onTap: () => widget.onSelected(item),
-                    tileColor: widget.initialValue == item ? AppColors.cyan.withOpacity(0.1) : null,
+                    tileColor: widget.initialValue == item ? AppColors.lPrimaryContainer.withOpacity(0.1) : null,
                   );
                 },
               ),

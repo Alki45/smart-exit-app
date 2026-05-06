@@ -1,196 +1,677 @@
 {
-    "universities": [
+  "universities": [
+    {
+      "id": 1,
+      "name": "Addis Ababa University",
+      "location": "Addis Ababa",
+      "generation": "1st",
+      "colleges": [
         {
-            "name": "Addis Ababa University",
-            "colleges": [
-                {
-                    "name": "College of Natural and Computational Sciences",
-                    "departments": [
-                        {
-                            "name": "Computer Science",
-                            "streams": [
-                                "Software Engineering",
-                                "Data Science",
-                                "Artificial Intelligence",
-                                "Cybersecurity"
-                            ]
-                        },
-                        {
-                            "name": "Mathematics",
-                            "streams": [
-                                "Pure Mathematics",
-                                "Applied Mathematics",
-                                "Statistics"
-                            ]
-                        },
-                        {
-                            "name": "Physics",
-                            "streams": [
-                                "Theoretical Physics",
-                                "Applied Physics",
-                                "Astrophysics"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "College of Business and Economics",
-                    "departments": [
-                        {
-                            "name": "Accounting and Finance",
-                            "streams": [
-                                "Accounting",
-                                "Finance",
-                                "Banking"
-                            ]
-                        },
-                        {
-                            "name": "Management",
-                            "streams": [
-                                "Business Management",
-                                "Human Resource Management",
-                                "Marketing"
-                            ]
-                        },
-                        {
-                            "name": "Economics",
-                            "streams": [
-                                "Development Economics",
-                                "International Economics"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "College of Engineering",
-                    "departments": [
-                        {
-                            "name": "Electrical and Computer Engineering",
-                            "streams": [
-                                "Electrical Engineering",
-                                "Computer Engineering",
-                                "Electronics"
-                            ]
-                        },
-                        {
-                            "name": "Civil Engineering",
-                            "streams": [
-                                "Structural Engineering",
-                                "Water Resources",
-                                "Transportation"
-                            ]
-                        },
-                        {
-                            "name": "Mechanical Engineering",
-                            "streams": [
-                                "Thermal Engineering",
-                                "Manufacturing",
-                                "Automotive"
-                            ]
-                        }
-                    ]
-                }
-            ]
+          "name": "Institute of Technology (AAiT)",
+          "departments": [
+            { "name": "Civil Engineering", "streams": ["Structural", "Water Resource", "Geotechnical", "Road"] },
+            { "name": "Electrical and Computer Engineering", "streams": ["Communication", "Power", "Control", "Computer"] },
+            { "name": "Mechanical Engineering", "streams": ["Thermal", "Manufacturing", "Automotive"] },
+            { "name": "Chemical Engineering", "streams": ["Process", "Environmental"] },
+            { "name": "Software Engineering", "streams": ["Web", "Mobile", "AI"] }
+          ]
         },
         {
-            "name": "Addis Ababa Science and Technology University",
-            "colleges": [
-                {
-                    "name": "College of Electrical and Mechanical Engineering",
-                    "departments": [
-                        {
-                            "name": "Electrical Engineering",
-                            "streams": [
-                                "Power Systems",
-                                "Control Systems",
-                                "Telecommunications"
-                            ]
-                        },
-                        {
-                            "name": "Mechanical Engineering",
-                            "streams": [
-                                "Thermodynamics",
-                                "Fluid Mechanics",
-                                "Machine Design"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "College of Applied Sciences",
-                    "departments": [
-                        {
-                            "name": "Applied Chemistry",
-                            "streams": [
-                                "Industrial Chemistry",
-                                "Analytical Chemistry"
-                            ]
-                        },
-                        {
-                            "name": "Applied Biology",
-                            "streams": [
-                                "Biotechnology",
-                                "Environmental Biology"
-                            ]
-                        }
-                    ]
-                }
-            ]
+          "name": "College of Natural Sciences",
+          "departments": [
+            { "name": "Computer Science", "streams": ["Network", "Data Science"] },
+            { "name": "Mathematics", "streams": ["Pure", "Applied"] },
+            { "name": "Physics", "streams": ["Astrophysics", "Theoretical"] },
+            { "name": "Chemistry", "streams": ["Industrial", "Analytical"] },
+            { "name": "Biology", "streams": ["Biotechnology"] }
+          ]
         },
         {
-            "name": "Bahir Dar University",
-            "colleges": [
-                {
-                    "name": "College of Science",
-                    "departments": [
-                        {
-                            "name": "Computer Science",
-                            "streams": [
-                                "Software Engineering",
-                                "Information Systems",
-                                "Network Engineering"
-                            ]
-                        },
-                        {
-                            "name": "Biology",
-                            "streams": [
-                                "Zoology",
-                                "Botany",
-                                "Microbiology"
-                            ]
-                        }
-                    ]
-                },
-                {
-                    "name": "College of Agriculture and Environmental Sciences",
-                    "departments": [
-                        {
-                            "name": "Plant Sciences",
-                            "streams": [
-                                "Agronomy",
-                                "Horticulture",
-                                "Plant Breeding"
-                            ]
-                        },
-                        {
-                            "name": "Animal Sciences",
-                            "streams": [
-                                "Animal Production",
-                                "Animal Health",
-                                "Dairy Science"
-                            ]
-                        }
-                    ]
-                }
-            ]
+          "name": "College of Health Sciences",
+          "departments": [
+            { "name": "Medicine", "streams": ["Surgery", "Internal Medicine"] },
+            { "name": "Pharmacy", "streams": ["Pharmacology", "Clinical"] },
+            { "name": "Nursing", "streams": [] },
+            { "name": "Public Health", "streams": [] }
+          ]
         }
-    ],
-    "years": [
-        "1st Year",
-        "2nd Year",
-        "3rd Year",
-        "4th Year",
-        "5th Year",
-        "Graduate"
-    ]
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Jimma University",
+      "location": "Jimma",
+      "generation": "1st",
+      "colleges": [
+        {
+          "name": "Jimma Institute of Technology (JiT)",
+          "departments": [
+            { "name": "Biomedical Engineering", "streams": ["Bio-instrumentation"] },
+            { "name": "Civil Engineering", "streams": [] },
+            { "name": "Electrical and Computer Engineering", "streams": [] },
+            { "name": "Mechanical Engineering", "streams": [] },
+            { "name": "Water Resources Engineering", "streams": [] }
+          ]
+        },
+        {
+          "name": "College of Health Sciences",
+          "departments": [
+            { "name": "Medicine", "streams": [] },
+            { "name": "Nursing", "streams": [] },
+            { "name": "Pharmacy", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Bahir Dar University",
+      "location": "Bahir Dar",
+      "generation": "1st",
+      "colleges": [
+        {
+          "name": "Bahir Dar Institute of Technology (BiT)",
+          "departments": [
+            { "name": "Chemical Engineering", "streams": ["Food Engineering"] },
+            { "name": "Textile Engineering", "streams": ["Fashion Design"] },
+            { "name": "Computing", "streams": ["Computer Science", "Software Engineering", "IT"] },
+            { "name": "Electrical Engineering", "streams": [] }
+          ]
+        },
+        {
+          "name": "College of Science",
+          "departments": [
+            { "name": "Mathematics", "streams": [] },
+            { "name": "Biology", "streams": [] },
+            { "name": "Physics", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Hawassa University",
+      "location": "Hawassa",
+      "generation": "1st",
+      "colleges": [
+        {
+          "name": "College of Informatics",
+          "departments": [
+            { "name": "Computer Science", "streams": [] },
+            { "name": "Information Technology", "streams": [] },
+            { "name": "Information Systems", "streams": [] }
+          ]
+        },
+        {
+          "name": "College of Medicine",
+          "departments": [
+            { "name": "Medicine", "streams": [] },
+            { "name": "Public Health", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Haramaya University",
+      "location": "Haramaya",
+      "generation": "1st",
+      "colleges": [
+        {
+          "name": "College of Agriculture",
+          "departments": [
+            { "name": "Plant Sciences", "streams": ["Agronomy"] },
+            { "name": "Animal Sciences", "streams": ["Dairy"] },
+            { "name": "Agricultural Economics", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Adama Science and Technology University",
+      "location": "Adama",
+      "generation": "Research",
+      "colleges": [
+        {
+          "name": "School of Electrical Engineering",
+          "departments": [
+            { "name": "Electrical and Computer Engineering", "streams": ["Power", "Control"] },
+            { "name": "Computer Science and Engineering", "streams": [] },
+            { "name": "Software Engineering", "streams": [] }
+          ]
+        },
+        {
+          "name": "School of Civil Engineering",
+          "departments": [
+            { "name": "Civil Engineering", "streams": [] },
+            { "name": "Architecture", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Addis Ababa Science and Technology University",
+      "location": "Addis Ababa",
+      "generation": "Research",
+      "colleges": [
+        {
+          "name": "College of Applied Science",
+          "departments": [
+            { "name": "Industrial Chemistry", "streams": [] },
+            { "name": "Food Science", "streams": [] },
+            { "name": "Environmental Science", "streams": [] }
+          ]
+        },
+        {
+          "name": "College of Engineering",
+          "departments": [
+            { "name": "Electromechanical Engineering", "streams": [] },
+            { "name": "Mining Engineering", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Arba Minch University",
+      "location": "Arba Minch",
+      "generation": "1st",
+      "colleges": [
+        {
+          "name": "Water Technology Institute",
+          "departments": [
+            { "name": "Water Resources Engineering", "streams": [] },
+            { "name": "Hydraulic Engineering", "streams": [] },
+            { "name": "Meteorology", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Gondar University",
+      "location": "Gondar",
+      "generation": "1st",
+      "colleges": [
+        {
+          "name": "College of Medicine",
+          "departments": [
+            { "name": "Medicine", "streams": [] },
+            { "name": "Nursing", "streams": [] },
+            { "name": "Midwifery", "streams": [] },
+            { "name": "Physiotherapy", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Mekelle University",
+      "location": "Mekelle",
+      "generation": "1st",
+      "colleges": [
+        {
+          "name": "College of Health Sciences",
+          "departments": [
+            { "name": "Medicine", "streams": [] },
+            { "name": "Pharmacy", "streams": [] },
+            { "name": "Public Health", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Assosa University",
+      "location": "Assosa",
+      "generation": "3rd",
+      "colleges": [
+        {
+          "name": "College of Engineering",
+          "departments": [
+            { "name": "Computer Science", "streams": ["Software", "Networking"] },
+            { "name": "Electrical Engineering", "streams": ["Power", "Control"] },
+            { "name": "Civil Engineering", "streams": ["Structural", "Hydraulics"] },
+            { "name": "Mechanical Engineering", "streams": ["Thermal", "Manufacturing"] },
+            { "name": "Chemical Engineering", "streams": ["Process"] },
+            { "name": "Information Technology", "streams": [] }
+          ]
+        },
+        {
+          "name": "College of Natural Sciences",
+          "departments": [
+            { "name": "Chemistry", "streams": [] },
+            { "name": "Biology", "streams": [] },
+            { "name": "Mathematics", "streams": [] },
+            { "name": "Physics", "streams": [] },
+            { "name": "Statistics", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Wollo University",
+      "location": "Dessie",
+      "generation": "2nd",
+      "colleges": [
+        {
+          "name": "Kombolcha Institute of Technology",
+          "departments": [
+            { "name": "Mechanical Engineering", "streams": [] },
+            { "name": "Electrical Engineering", "streams": [] },
+            { "name": "Civil Engineering", "streams": [] },
+            { "name": "Textile Engineering", "streams": [] },
+            { "name": "Information Technology", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Debre Markos University",
+      "location": "Debre Markos",
+      "generation": "2nd",
+      "colleges": [
+        {
+          "name": "College of Technology",
+          "departments": [
+            { "name": "Civil Engineering", "streams": [] },
+            { "name": "Electrical Engineering", "streams": [] },
+            { "name": "Mechanical Engineering", "streams": [] },
+            { "name": "Computer Science", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Dire Dawa University",
+      "location": "Dire Dawa",
+      "generation": "2nd",
+      "colleges": [
+        {
+          "name": "College of Technology",
+          "departments": [
+            { "name": "Electrical Engineering", "streams": [] },
+            { "name": "Mechanical Engineering", "streams": [] },
+            { "name": "Civil Engineering", "streams": [] },
+            { "name": "Chemical Engineering", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Semera University",
+      "location": "Semera",
+      "generation": "2nd",
+      "colleges": [
+        {
+          "name": "College of Veterinary Medicine",
+          "departments": [
+            { "name": "Veterinary Science", "streams": [] },
+            { "name": "Animal Sciences", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Jigjiga University",
+      "location": "Jigjiga",
+      "generation": "2nd",
+      "colleges": [
+        {
+          "name": "College of Medicine",
+          "departments": [
+            { "name": "Medicine", "streams": [] },
+            { "name": "Pharmacy", "streams": [] },
+            { "name": "Public Health", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "name": "Wollega University",
+      "location": "Nekemte",
+      "generation": "2nd",
+      "colleges": [
+        {
+          "name": "College of Engineering",
+          "departments": [
+            { "name": "Civil Engineering", "streams": [] },
+            { "name": "Electrical Engineering", "streams": [] },
+            { "name": "Mechanical Engineering", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "name": "Madu Walabu University",
+      "location": "Bale Robe",
+      "generation": "2nd",
+      "colleges": [
+        {
+          "name": "College of Agriculture",
+          "departments": [
+            { "name": "Animal Science", "streams": [] },
+            { "name": "Plant Science", "streams": [] },
+            { "name": "Range Management", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "name": "Debre Berhan University",
+      "location": "Debre Berhan",
+      "generation": "2nd",
+      "colleges": [
+        {
+          "name": "College of Engineering",
+          "departments": [
+            { "name": "Civil Engineering", "streams": [] },
+            { "name": "Mechanical Engineering", "streams": [] },
+            { "name": "Computer Science", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "name": "Aksum University",
+      "location": "Aksum",
+      "generation": "2nd",
+      "colleges": [
+        {
+          "name": "College of Agriculture",
+          "departments": [
+            { "name": "Plant Science", "streams": [] },
+            { "name": "Animal Science", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "name": "Mizan-Tepi University",
+      "location": "Mizan",
+      "generation": "2nd",
+      "colleges": [
+        {
+          "name": "College of Technology",
+          "departments": [
+            { "name": "Computer Science", "streams": [] },
+            { "name": "Information Technology", "streams": [] },
+            { "name": "Electrical Engineering", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "name": "Wachemo University",
+      "location": "Hossana",
+      "generation": "2nd",
+      "colleges": [
+        {
+          "name": "College of Engineering",
+          "departments": [
+            { "name": "Civil Engineering", "streams": [] },
+            { "name": "Mechanical Engineering", "streams": [] },
+            { "name": "Electrical Engineering", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "name": "Wolaita Sodo University",
+      "location": "Sodo",
+      "generation": "2nd",
+      "colleges": [
+        {
+          "name": "College of Health Sciences",
+          "departments": [
+            { "name": "Medicine", "streams": [] },
+            { "name": "Nursing", "streams": [] },
+            { "name": "Public Health", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "name": "Metu University",
+      "location": "Metu",
+      "generation": "3rd",
+      "colleges": [
+        {
+          "name": "College of Engineering",
+          "departments": [
+            { "name": "Civil Engineering", "streams": [] },
+            { "name": "Electrical Engineering", "streams": [] },
+            { "name": "Mechanical Engineering", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "name": "Woldia University",
+      "location": "Woldia",
+      "generation": "3rd",
+      "colleges": [
+        {
+          "name": "College of Technology",
+          "departments": [
+            { "name": "Electrical Engineering", "streams": [] },
+            { "name": "Civil Engineering", "streams": [] },
+            { "name": "Mechanical Engineering", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "name": "Gambella University",
+      "location": "Gambella",
+      "generation": "3rd",
+      "colleges": [
+        {
+          "name": "College of Agriculture",
+          "departments": [
+            { "name": "Animal Science", "streams": [] },
+            { "name": "Plant Science", "streams": [] },
+            { "name": "Natural Resource Management", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "name": "Bule Hora University",
+      "location": "Bule Hora",
+      "generation": "3rd",
+      "colleges": [
+        {
+          "name": "College of Engineering",
+          "departments": [
+            { "name": "Mining Engineering", "streams": [] },
+            { "name": "Civil Engineering", "streams": [] },
+            { "name": "Electrical Engineering", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "name": "Adigrat University",
+      "location": "Adigrat",
+      "generation": "3rd",
+      "colleges": [
+        {
+          "name": "College of Technology",
+          "departments": [
+            { "name": "Civil Engineering", "streams": [] },
+            { "name": "Mechanical Engineering", "streams": [] },
+            { "name": "Electrical Engineering", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "name": "Debre Tabor University",
+      "location": "Debre Tabor",
+      "generation": "3rd",
+      "colleges": [
+        {
+          "name": "College of Health Science",
+          "departments": [
+            { "name": "Medicine", "streams": [] },
+            { "name": "Nursing", "streams": [] },
+            { "name": "Midwifery", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "name": "Arsi University",
+      "location": "Asella",
+      "generation": "3rd",
+      "colleges": [
+        {
+          "name": "College of Medicine",
+          "departments": [
+            { "name": "Medicine", "streams": [] },
+            { "name": "Nursing", "streams": [] },
+            { "name": "Pharmacy", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "name": "Kebri Dehar University",
+      "location": "Kebri Dehar",
+      "generation": "4th",
+      "colleges": [
+        {
+          "name": "College of Agriculture",
+          "departments": [
+            { "name": "Dryland Agriculture", "streams": [] },
+            { "name": "Animal Science", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "name": "Bonga University",
+      "location": "Bonga",
+      "generation": "4th",
+      "colleges": [
+        {
+          "name": "College of Agriculture",
+          "departments": [
+            { "name": "Forestry", "streams": [] },
+            { "name": "Plant Science", "streams": [] },
+            { "name": "Coffee and Tea", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "name": "Injibara University",
+      "location": "Injibara",
+      "generation": "4th",
+      "colleges": [
+        {
+          "name": "College of Natural Science",
+          "departments": [
+            { "name": "Biology", "streams": [] },
+            { "name": "Chemistry", "streams": [] },
+            { "name": "Mathematics", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "name": "Raya University",
+      "location": "Maichew",
+      "generation": "4th",
+      "colleges": [
+        {
+          "name": "College of Agriculture",
+          "departments": [
+            { "name": "Animal Science", "streams": [] },
+            { "name": "Plant Science", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "name": "Mekdela Amba University",
+      "location": "Tulu Awuliya",
+      "generation": "4th",
+      "colleges": [
+        {
+          "name": "College of Business",
+          "departments": [
+            { "name": "Economics", "streams": [] },
+            { "name": "Accounting", "streams": [] },
+            { "name": "Management", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "name": "Selale University",
+      "location": "Fitche",
+      "generation": "4th",
+      "colleges": [
+        {
+          "name": "College of Health Science",
+          "departments": [
+            { "name": "Nursing", "streams": [] },
+            { "name": "Public Health", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "name": "Werabe University",
+      "location": "Werabe",
+      "generation": "4th",
+      "colleges": [
+        {
+          "name": "College of Technology",
+          "departments": [
+            { "name": "Computer Science", "streams": [] },
+            { "name": "Civil Engineering", "streams": [] }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 38, "name": "Dembi Dolo University", "location": "Dembi Dolo", "generation": "4th", "colleges": [ { "name": "Engineering", "departments": [ { "name": "Civil Engineering", "streams": [] } ] } ] },
+    { "id": 39, "name": "Jinka University", "location": "Jinka", "generation": "4th", "colleges": [ { "name": "Agriculture", "departments": [ { "name": "Animal Science", "streams": [] } ] } ] },
+    { "id": 40, "name": "Oda Bultum University", "location": "Chiro", "generation": "4th", "colleges": [ { "name": "Agriculture", "departments": [ { "name": "Plant Science", "streams": [] } ] } ] },
+    { "id": 41, "name": "Ethiopian Civil Service University", "location": "Addis Ababa", "generation": "Special", "colleges": [ { "name": "Governance", "departments": [ { "name": "Public Management", "streams": [] } ] } ] },
+    { "id": 42, "name": "Kotebe Metropolitan University", "location": "Addis Ababa", "generation": "Special", "colleges": [ { "name": "Education", "departments": [ { "name": "Language Education", "streams": [] } ] } ] }
+  ],
+  "years": ["1st Year", "2nd Year", "3rd Year", "4th Year", "5th Year", "6th Year"],
+  "semesters": ["Semester 1", "Semester 2"]
 }

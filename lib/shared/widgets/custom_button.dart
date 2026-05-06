@@ -38,14 +38,13 @@ class CustomButton extends StatelessWidget {
       case ButtonType.primary:
         return Container(
           decoration: BoxDecoration(
-            gradient: onPressed != null ? AppColors.primaryGradient : null,
-            color: onPressed == null ? AppColors.cardBackgroundLight : null,
+            color: onPressed == null ? AppColors.lOutlineVariant : AppColors.lPrimary,
             borderRadius: BorderRadius.circular(12),
             boxShadow: onPressed != null
                 ? [
                     BoxShadow(
-                      color: AppColors.purple.withOpacity(0.3),
-                      blurRadius: 8,
+                      color: AppColors.lPrimary.withOpacity(0.2),
+                      blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
                   ]
@@ -56,6 +55,7 @@ class CustomButton extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent,
               shadowColor: Colors.transparent,
+              foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -68,35 +68,36 @@ class CustomButton extends StatelessWidget {
         return ElevatedButton(
           onPressed: isLoading ? null : onPressed,
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.cyan,
-            foregroundColor: AppColors.primaryDark,
+            backgroundColor: AppColors.lSecondary,
+            foregroundColor: Colors.white,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: _buildChild(AppColors.primaryDark),
+          child: _buildChild(Colors.white),
         );
 
       case ButtonType.outline:
         return OutlinedButton(
           onPressed: isLoading ? null : onPressed,
           style: OutlinedButton.styleFrom(
-            side: const BorderSide(color: AppColors.cyan),
+            side: const BorderSide(color: AppColors.lPrimary, width: 1.5),
+            foregroundColor: AppColors.lPrimary,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),
           ),
-          child: _buildChild(AppColors.cyan),
+          child: _buildChild(AppColors.lPrimary),
         );
 
       case ButtonType.text:
         return TextButton(
           onPressed: isLoading ? null : onPressed,
           style: TextButton.styleFrom(
-            foregroundColor: AppColors.cyan,
+            foregroundColor: AppColors.lPrimary,
           ),
-          child: _buildChild(AppColors.cyan),
+          child: _buildChild(AppColors.lPrimary),
         );
     }
   }

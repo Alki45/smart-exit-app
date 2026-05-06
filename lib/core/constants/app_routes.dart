@@ -7,6 +7,8 @@ class AppRoutes {
   
   // Main Routes
   static const String home = '/home';
+  static const String lab = '/lab';
+  static const String stats = '/stats';
   static const String profile = '/profile';
   static const String editProfile = '/edit-profile';
   

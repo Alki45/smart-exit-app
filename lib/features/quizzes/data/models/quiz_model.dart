@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'question_model.dart';
     
 class QuizModel {
@@ -8,6 +7,11 @@ class QuizModel {
   final List<QuestionModel> questions;
   final int duration; // in minutes
   final DateTime createdAt;
+  final bool isMockExam;
+  final bool isCourseSpecific;
+  final String? blueprintId;
+  final String? blueprintVersionUsed;
+  final String? scope; // "mock_exam", "focus_session", "quick_practice"
 
   QuizModel({
     required this.id,
@@ -16,6 +20,11 @@ class QuizModel {
     required this.questions,
     required this.duration,
     required this.createdAt,
+    this.isMockExam = false,
+    this.isCourseSpecific = true,
+    this.blueprintId,
+    this.blueprintVersionUsed,
+    this.scope,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +35,11 @@ class QuizModel {
       'questions': questions.map((q) => q.toMap()).toList(),
       'duration': duration,
       'createdAt': createdAt.toIso8601String(),
+      'isMockExam': isMockExam,
+      'isCourseSpecific': isCourseSpecific,
+      'blueprintId': blueprintId,
+      'blueprintVersionUsed': blueprintVersionUsed,
+      'scope': scope,
     };
   }
 
@@ -39,7 +53,12 @@ class QuizModel {
               .toList() ??
           [],
       duration: map['duration'] ?? 0,
-      createdAt: DateTime.parse(map['createdAt']),
+      createdAt: map['createdAt'] != null ? DateTime.parse(map['createdAt']) : DateTime.now(),
+      isMockExam: map['isMockExam'] ?? false,
+      isCourseSpecific: map['isCourseSpecific'] ?? true,
+      blueprintId: map['blueprintId'],
+      blueprintVersionUsed: map['blueprintVersionUsed'],
+      scope: map['scope'],
     );
   }
 }

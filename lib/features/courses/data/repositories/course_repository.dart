@@ -50,4 +50,22 @@ class CourseRepository {
         .toList()
         .cast<BlueprintModel>();
   }
+
+  Future<void> deleteCourse(String userId, String courseId) async {
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('courses')
+        .doc(courseId)
+        .delete();
+  }
+
+  Future<void> deleteBlueprint(String userId, String blueprintId) async {
+    await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('blueprints')
+        .doc(blueprintId)
+        .delete();
+  }
 }

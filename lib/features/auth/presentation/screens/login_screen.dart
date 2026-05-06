@@ -54,17 +54,20 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                   // Header
+                  // Header
                   Text(
                     'Welcome Back',
-                    style: AppTextStyles.h1,
+                    style: AppTextStyles.h1.copyWith(
+                      color: AppColors.lPrimary,
+                      fontWeight: FontWeight.w900,
+                    ),
                     textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 12),
                   Text(
                     'Sign in to continue your preparation',
-                    style: AppTextStyles.bodyMedium.copyWith(
-                      color: AppColors.textSecondary,
+                    style: AppTextStyles.bodyLarge.copyWith(
+                      color: AppColors.lOnSurfaceVariant,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -79,7 +82,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     prefixIcon: Icons.email_outlined,
                     validator: Validators.validateEmail,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
                   CustomTextField(
                     label: AppStrings.password,
                     hint: 'Enter your password',
@@ -94,28 +97,40 @@ class _LoginScreenState extends State<LoginScreen> {
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () {
-                        // TODO: Implement forgot password
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Password reset link will be sent to your email.'),
+                            behavior: SnackBarBehavior.floating,
+                          ),
+                        );
                       },
                       child: Text(
                         AppStrings.forgotPassword,
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.purple,
+                        style: AppTextStyles.bodyMedium.copyWith(
+                          color: AppColors.lPrimary,
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 32),
 
                   // Error Message
                   Consumer<AuthProvider>(
                     builder: (context, auth, _) {
                       if (auth.errorMessage != null) {
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 16),
+                        return Container(
+                          padding: const EdgeInsets.all(12),
+                          margin: const EdgeInsets.only(bottom: 20),
+                          decoration: BoxDecoration(
+                            color: AppColors.lError.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                           child: Text(
                             auth.errorMessage!,
                             style: AppTextStyles.bodyMedium.copyWith(
-                              color: AppColors.error,
+                              color: AppColors.lError,
+                              fontWeight: FontWeight.w600,
                             ),
                             textAlign: TextAlign.center,
                           ),
@@ -128,10 +143,34 @@ class _LoginScreenState extends State<LoginScreen> {
                   // Login Button
                   Consumer<AuthProvider>(
                     builder: (context, auth, _) {
-                      return CustomButton(
-                        text: AppStrings.login,
-                        onPressed: _onLogin,
-                        isLoading: auth.isLoading,
+                      return Column(
+                        children: [
+                          SizedBox(
+                            height: 56,
+                            width: double.infinity,
+                            child: CustomButton(
+                              text: AppStrings.login,
+                              onPressed: _onLogin,
+                              isLoading: auth.isLoading,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          SizedBox(
+                            height: 56,
+                            width: double.infinity,
+                            child: CustomButton(
+                              text: 'Try Demo Mode',
+                              type: ButtonType.outline,
+                              onPressed: () async {
+                                await auth.loginAsDemo();
+                                if (mounted) {
+                                  Navigator.pushReplacementNamed(context, AppRoutes.home);
+                                }
+                              },
+                              isLoading: auth.isLoading,
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),
@@ -144,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       Text(
                         AppStrings.dontHaveAccount,
                         style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.textSecondary,
+                          color: AppColors.lOnSurfaceVariant,
                         ),
                       ),
                       TextButton(
@@ -153,9 +192,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         child: Text(
                           AppStrings.register,
-                          style: AppTextStyles.bodyMedium.copyWith(
-                            color: AppColors.cyan,
-                            fontWeight: FontWeight.bold,
+                          style: AppTextStyles.bodyLarge.copyWith(
+                            color: AppColors.lPrimary,
+                            fontWeight: FontWeight.w800,
                           ),
                         ),
                       ),

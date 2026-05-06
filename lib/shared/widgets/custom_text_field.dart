@@ -47,8 +47,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
         Text(
           widget.label,
           style: AppTextStyles.bodyMedium.copyWith(
-            color: AppColors.textSecondary,
-            fontWeight: FontWeight.w500,
+            color: AppColors.lPrimary,
+            fontWeight: FontWeight.w700,
           ),
         ),
         const SizedBox(height: 8),
@@ -60,17 +60,20 @@ class _CustomTextFieldState extends State<CustomTextField> {
           enabled: widget.enabled,
           maxLines: widget.maxLines,
           onChanged: widget.onChanged,
-          style: AppTextStyles.bodyLarge,
+          style: AppTextStyles.bodyLarge.copyWith(
+            color: AppColors.lOnSurface,
+            fontWeight: FontWeight.w600,
+          ),
           decoration: InputDecoration(
             hintText: widget.hint,
             prefixIcon: widget.prefixIcon != null
-                ? Icon(widget.prefixIcon, color: AppColors.textTertiary)
+                ? Icon(widget.prefixIcon, color: AppColors.lPrimary.withOpacity(0.7), size: 22)
                 : null,
             suffixIcon: widget.isPassword
                 ? IconButton(
                     icon: Icon(
                       _obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: AppColors.textTertiary,
+                      color: AppColors.lOnSurfaceVariant,
                     ),
                     onPressed: () {
                       setState(() {
@@ -80,7 +83,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   )
                 : widget.suffixIcon != null
                     ? IconButton(
-                        icon: Icon(widget.suffixIcon, color: AppColors.textTertiary),
+                        icon: Icon(widget.suffixIcon, color: AppColors.lOnSurfaceVariant),
                         onPressed: widget.onSuffixIconPressed,
                       )
                     : null,

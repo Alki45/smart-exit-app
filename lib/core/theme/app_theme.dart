@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../constants/app_colors.dart';
 import 'text_styles.dart';
+import 'light_theme_data.dart';
 
 /// App theme configuration
 class AppTheme {
+  /// Light theme — SmartExit Material3 design (primary UI)
+  static ThemeData get lightTheme => LightThemeData.theme;
+
   static ThemeData get darkTheme {
     return ThemeData(
       brightness: Brightness.dark,

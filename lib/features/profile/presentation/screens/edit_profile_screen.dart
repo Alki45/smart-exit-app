@@ -33,6 +33,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _selectedDepartment;
   String? _selectedStream;
   String? _selectedYear;
+  DateTime? _selectedExamDate;
+  TimeOfDay? _selectedReminderTime;
 
   List<String> _universities = [];
   List<String> _colleges = [];
@@ -67,12 +69,27 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
         if (user != null) {
           _fullNameController.text = user.fullName;
-          _bioController.text = user.bio ?? '';
+          _bioController.text = user.bioGoals ?? '';
           _selectedUniversity = user.universityName;
           _selectedCollege = user.college;
           _selectedDepartment = user.department;
           _selectedStream = user.stream;
-          _selectedYear = user.academicYear;
+          _selectedYear = user.academicYear?.toString();
+          _selectedExamDate = user.examDate;
+          if (user.reminderTime != null) {
+            try {
+              final parts = user.reminderTime!.split(RegExp(r'[: ]'));
+              if (parts.length >= 2) {
+                int hour = int.parse(parts[0]);
+                final int minute = int.parse(parts[1]);
+                if (parts.length == 3 && parts[2].toUpperCase() == 'PM' && hour < 12) hour += 12;
+                if (parts.length == 3 && parts[2].toUpperCase() == 'AM' && hour == 12) hour = 0;
+                _selectedReminderTime = TimeOfDay(hour: hour, minute: minute);
+              }
+            } catch (e) {
+              debugPrint('Error parsing reminder time: $e');
+            }
+          }
 
           if (_selectedUniversity != null) {
             final university = (_universityData['universities'] as List)
@@ -145,7 +162,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         final university = (_universityData['universities'] as List).firstWhere((u) => u['name'] == _selectedUniversity);
         final college = (university['colleges'] as List).firstWhere((c) => c['name'] == _selectedCollege);
         final dept = (college['departments'] as List).firstWhere((d) => d['name'] == value);
-        _streams = (dept['streams'] as List).map((s) => s as String).toList();
+        
+        final rawStreams = (dept['streams'] as List).map((s) => s as String).toList();
+        if (rawStreams.isEmpty) {
+          _streams = ['General'];
+          _selectedStream = 'General';
+        } else {
+          _streams = rawStreams;
+        }
       } else {
         _streams = [];
       }
@@ -170,6 +194,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         department: _selectedDepartment,
         stream: _selectedStream,
         academicYear: _selectedYear,
+        examDate: _selectedExamDate,
+        reminderTime: _selectedReminderTime != null 
+            ? '${_selectedReminderTime!.hourOfPeriod.toString().padLeft(2, '0')}:${_selectedReminderTime!.minute.toString().padLeft(2, '0')} ${_selectedReminderTime!.period == DayPeriod.am ? 'AM' : 'PM'}'
+            : null,
       );
 
       if (success && mounted) {
@@ -199,7 +227,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(AppStrings.personalInfo, style: AppTextStyles.h4.copyWith(color: AppColors.cyan)),
+              Text(AppStrings.personalInfo, style: AppTextStyles.h3.copyWith(color: AppColors.lPrimary)),
               const SizedBox(height: 16),
               CustomTextField(
                 label: AppStrings.fullName,
@@ -234,7 +262,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 maxLines: 3,
               ),
               const SizedBox(height: 32),
-              Text(AppStrings.academicDetails, style: AppTextStyles.h4.copyWith(color: AppColors.cyan)),
+              Text(AppStrings.academicDetails, style: AppTextStyles.h3.copyWith(color: AppColors.lPrimary)),
               const SizedBox(height: 16),
               SearchableDropdown(
                 label: AppStrings.department,
@@ -263,6 +291,53 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 prefixIcon: Icons.calendar_today,
               ),
               const SizedBox(height: 32),
+              Text('Study Goals & Reminders', style: AppTextStyles.h3.copyWith(color: AppColors.lPrimary)),
+              const SizedBox(height: 16),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.event, color: AppColors.lPrimary),
+                title: Text('National Exit Exam Date', style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold)),
+                subtitle: Text(
+                  _selectedExamDate != null 
+                    ? '${_selectedExamDate!.day}/${_selectedExamDate!.month}/${_selectedExamDate!.year}'
+                    : 'Not set',
+                  style: AppTextStyles.bodySmall,
+                ),
+                trailing: TextButton(
+                  onPressed: () async {
+                    final date = await showDatePicker(
+                      context: context,
+                      initialDate: _selectedExamDate ?? DateTime.now().add(const Duration(days: 30)),
+                      firstDate: DateTime.now(),
+                      lastDate: DateTime.now().add(const Duration(days: 365 * 2)),
+                    );
+                    if (date != null) setState(() => _selectedExamDate = date);
+                  },
+                  child: const Text('Set Date'),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                leading: const Icon(Icons.alarm, color: AppColors.lPrimary),
+                title: Text('Daily Study Reminder', style: AppTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.bold)),
+                subtitle: Text(
+                  _selectedReminderTime != null 
+                    ? _selectedReminderTime!.format(context)
+                    : 'Not set',
+                  style: AppTextStyles.bodySmall,
+                ),
+                trailing: TextButton(
+                  onPressed: () async {
+                    final time = await showTimePicker(
+                      context: context,
+                      initialTime: _selectedReminderTime ?? const TimeOfDay(hour: 18, minute: 0),
+                    );
+                    if (time != null) setState(() => _selectedReminderTime = time);
+                  },
+                  child: const Text('Set Time'),
+                ),
+              ),
+              const SizedBox(height: 32),
               Consumer<AuthProvider>(
                 builder: (context, auth, _) {
                   return CustomButton(
@@ -280,13 +355,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   showDialog(
                     context: context,
                     builder: (ctx) => AlertDialog(
-                      backgroundColor: AppColors.cardBackground,
-                      title: const Text('Logout'),
-                      content: const Text('Are you sure you want to logout?'),
+                      backgroundColor: Colors.white,
+                      surfaceTintColor: Colors.white,
+                      title: Text('Logout', style: AppTextStyles.h3),
+                      content: Text('Are you sure you want to logout? This will end your current session.', style: AppTextStyles.bodyMedium),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.pop(ctx),
-                          child: const Text('Cancel'),
+                          child: Text('Cancel', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.lOutline)),
                         ),
                         TextButton(
                           onPressed: () {
@@ -294,7 +370,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             Navigator.pop(context); // Close edit screen
                             Provider.of<AuthProvider>(context, listen: false).logout();
                           },
-                          child: const Text('Logout', style: TextStyle(color: AppColors.error)),
+                          child: Text('Logout', style: AppTextStyles.bodyMedium.copyWith(color: AppColors.lError, fontWeight: FontWeight.bold)),
                         ),
                       ],
                     ),

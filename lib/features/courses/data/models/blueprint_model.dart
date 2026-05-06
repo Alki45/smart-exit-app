@@ -4,6 +4,9 @@ class BlueprintModel {
   final String fileUrl;
   final String? userId;
   final DateTime uploadedAt;
+  final String? deptId;
+  final int? academicYearEc;
+  final int? totalItems;
   final Map<String, int> topicWeights; // Topic Name -> Weight percentage
 
   BlueprintModel({
@@ -12,6 +15,9 @@ class BlueprintModel {
     required this.fileUrl,
     this.userId,
     required this.uploadedAt,
+    this.deptId,
+    this.academicYearEc,
+    this.totalItems,
     this.topicWeights = const {},
   });
 
@@ -22,6 +28,9 @@ class BlueprintModel {
       'fileUrl': fileUrl,
       'userId': userId,
       'uploadedAt': uploadedAt.toIso8601String(),
+      'dept_id': deptId,
+      'academic_year_ec': academicYearEc,
+      'total_items': totalItems,
       'topicWeights': topicWeights,
     };
   }
@@ -35,6 +44,9 @@ class BlueprintModel {
       uploadedAt: map['uploadedAt'] != null
           ? DateTime.tryParse(map['uploadedAt']) ?? DateTime.now()
           : DateTime.now(),
+      deptId: map['dept_id'],
+      academicYearEc: map['academic_year_ec'],
+      totalItems: map['total_items'],
       topicWeights: Map<String, int>.from(map['topicWeights'] ?? {}),
     );
   }
